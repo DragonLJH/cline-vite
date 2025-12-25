@@ -1,0 +1,45 @@
+{
+  "name": "cline-vite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/electron/main.js",
+  "scripts": {
+    "build:dev": "tsc -p build/tsconfig.build.json",
+    "dev": "yarn build:dev && node build/.out/dev.js",
+    "build": "vite build",
+    "build:electron:compile": "tsc",
+    "build:electron": "yarn build && yarn build:electron:compile && electron-builder",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^25.0.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "^10.4.23",
+    "electron": "^25.9.8",
+    "electron-builder": "^24.13.3",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^16.5.0",
+    "postcss": "^8.5.6",
+    "sass": "^1.97.1",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "5.4.11"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0",
+    "zustand": "^5.0.9"
+  }
+}
