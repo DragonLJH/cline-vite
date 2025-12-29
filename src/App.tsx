@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import AppTop from './components/AppTop'
-import { generateRoutes, RouteConfig } from './router'
+import { generateRoutes, getRoutesWithMeta, RouteConfig } from './router'
 import './App.css'
 
 // 加载组件
@@ -43,12 +43,20 @@ const RouteWrapper: React.FC<{ route: RouteConfig }> = ({ route }) => {
 
 // 应用根组件
 function App() {
-  // 使用同步版本的路由生成（包含懒加载）
-  const routes = React.useMemo(() => generateRoutes(), [])
+  const [routes, setRoutes] = React.useState<RouteConfig[]>([])
+  const [routesLoading, setRoutesLoading] = React.useState(true)
 
   React.useEffect(() => {
-    console.log('🎯 路由自动发现完成:', routes.length, '个页面')
-  }, [routes])
+    // 异步获取包含元数据的路由配置
+    getRoutesWithMeta().then((routesWithMeta) => {
+      setRoutes(routesWithMeta)
+      setRoutesLoading(false)
+      console.log('🎯 路由元数据加载完成:', routesWithMeta.length, '个页面')
+    }).catch((error) => {
+      console.error('❌ 路由配置加载失败:', error)
+      setRoutesLoading(false)
+    })
+  }, [])
 
   return (
     <Router>
@@ -60,7 +68,21 @@ function App() {
         padding: 0,
         overflow: 'hidden'
       }}>
-        <AppTop routes={routes} />
+        {routesLoading ? (
+          <div style={{
+            height: '48px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '14px'
+          }}>
+            正在加载导航...
+          </div>
+        ) : (
+          <AppTop routes={routes} />
+        )}
         <main className="main-content" style={{
           flex: 1,
           overflowY: 'auto',

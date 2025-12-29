@@ -1479,6 +1479,71 @@ export default App
 
 项目现在可以作为完整的 Electron 桌面应用运行，结合了 Vite 的快速开发体验和 Electron 的跨平台桌面应用能力。
 
+## 路由元数据获取问题修复
+
+### 19. 修复 AppTop 组件路由信息获取问题
+
+#### 问题分析
+在 `AppTop.tsx` 组件中，导航菜单依赖于 `route.meta` 来显示页面标题和图标，但由于懒加载机制，同步的 `generateRoutes()` 函数将所有路由的 `meta` 字段设置为 `undefined`，导致导航项显示为"未命名"。
+
+#### 解决方案
+修改 `App.tsx` 使用异步的 `getRoutesWithMeta()` 函数获取包含完整元数据的路由配置。
+
+**修改前 (src/App.tsx)：**
+```typescript
+// 使用同步版本的路由生成（包含懒加载）
+const routes = React.useMemo(() => generateRoutes(), [])
+```
+
+**修改后 (src/App.tsx)：**
+```typescript
+const [routes, setRoutes] = React.useState<RouteConfig[]>([])
+const [routesLoading, setRoutesLoading] = React.useState(true)
+
+React.useEffect(() => {
+  // 异步获取包含元数据的路由配置
+  getRoutesWithMeta().then((routesWithMeta) => {
+    setRoutes(routesWithMeta)
+    setRoutesLoading(false)
+    console.log('🎯 路由元数据加载完成:', routesWithMeta.length, '个页面')
+  }).catch((error) => {
+    console.error('❌ 路由配置加载失败:', error)
+    setRoutesLoading(false)
+  })
+}, [])
+```
+
+**添加路由加载状态处理：**
+```typescript
+{routesLoading ? (
+  <div style={{
+    height: '48px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontSize: '14px'
+  }}>
+    正在加载导航...
+  </div>
+) : (
+  <AppTop routes={routes} />
+)}
+```
+
+#### 技术要点
+- **保持懒加载性能**：路由组件仍然是懒加载的，只是在应用启动时预加载元数据
+- **异步状态管理**：使用 React state 管理路由加载状态
+- **用户体验优化**：路由加载期间显示友好的占位符，避免显示错误信息
+- **错误处理**：添加完整的错误捕获和处理逻辑
+
+#### 修复结果
+- ✅ 导航菜单正确显示页面信息：🏠 首页、🔢 计数器、ℹ️ 关于
+- ✅ 保持组件懒加载性能优势
+- ✅ 提升应用启动时的用户体验
+- ✅ 完整的错误处理和状态管理
+
 ## 依赖安装成功确认
 - ✅ Electron (^25.9.8) - 成功安装，使用国内镜像源解决网络问题
 - ✅ electron-builder (^24.13.3) - 成功安装
