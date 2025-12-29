@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { RouteConfig } from '../router'
+import { RouteConfig, getNavigationItems } from '../router'
 
 interface AppTopProps {
   routes?: RouteConfig[]
@@ -11,12 +11,8 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
   const [isMaximized, setIsMaximized] = useState(false)
   const [platform, setPlatform] = useState<string>('')
 
-  // 从路由配置生成导航项
-  const navItems = routes.map(route => ({
-    path: route.path,
-    label: route.meta?.icon ? `${route.meta.icon} ${route.meta.title}` : route.meta?.title || '未命名',
-    description: route.meta?.description || ''
-  }))
+  // 使用getNavigationItems生成导航项，包含新窗口打开信息
+  const navItems = getNavigationItems(routes)
 
   useEffect(() => {
     // 获取平台信息
@@ -77,6 +73,20 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
     }
   }
 
+  const handleOpenInWindow = async (path: string, title: string) => {
+    try {
+      console.log('Opening window:', { path, title })
+      if (window.electronAPI?.openWindow) {
+        const result = await window.electronAPI.openWindow(path, title)
+        console.log('Window open result:', result)
+      } else {
+        console.error('electronAPI.openWindow not available')
+      }
+    } catch (error) {
+      console.error('Failed to open window:', error)
+    }
+  }
+
   const handleDoubleClick = () => {
     if (platform === 'win32') {
       handleMaximize()
@@ -130,28 +140,7 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
           </div>
         </div>
 
-        {/* 导航菜单 */}
-        <nav style={{ display: 'flex', gap: '4px' }}>
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              style={{
-                padding: '8px 12px',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '4px',
-                fontSize: '13px',
-                fontWeight: '500',
-                background: location.pathname === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
-                transition: 'all 0.2s'
-              } as any}
-              title={item.description}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+
       </div>
 
       {/* 右侧：状态指示器和窗口控制 */}

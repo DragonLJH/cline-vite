@@ -9,6 +9,9 @@ export interface PageMeta {
   description: string
   path: string
   icon: string
+  permissions?: string[] // 访问页面所需的权限列表
+  showInMenu?: boolean // 是否在导航菜单中显示，默认true
+  canOpenWindow?: boolean // 是否支持单独打开窗口，默认false
 }
 
 // 页面模块接口
@@ -133,11 +136,33 @@ export const preloadNearbyRoutes = async (currentPath: string): Promise<void> =>
   }
 }
 
-// 获取导航菜单项（基于路由配置）
+// 获取导航菜单项（基于路由配置，只显示 showInMenu 为 true 的路由）
 export const getNavigationItems = (routes: RouteConfig[]) => {
-  return routes.map(route => ({
-    path: route.path,
-    label: route.meta?.icon ? `${route.meta.icon} ${route.meta.title}` : route.meta?.title || '未命名',
-    description: route.meta?.description || ''
-  }))
+  return routes
+    .filter(route => route.meta?.showInMenu !== false) // 默认显示，除非明确设置为 false
+    .map(route => ({
+      path: route.path,
+      label: route.meta?.icon ? `${route.meta.icon} ${route.meta.title}` : route.meta?.title || '未命名',
+      description: route.meta?.description || '',
+      canOpenWindow: route.meta?.canOpenWindow || false
+    }))
+}
+
+// 权限检查函数
+export const checkRoutePermission = (route: RouteConfig, userPermissions: string[] = []): boolean => {
+  const requiredPermissions = route.meta?.permissions
+  if (!requiredPermissions || requiredPermissions.length === 0) {
+    return true // 无权限要求，默认允许访问
+  }
+  return requiredPermissions.every(permission => userPermissions.includes(permission))
+}
+
+// 检查路由是否可以打开新窗口
+export const canOpenRouteInWindow = (route: RouteConfig): boolean => {
+  return route.meta?.canOpenWindow === true
+}
+
+// 获取支持窗口打开的路由
+export const getWindowRoutes = (routes: RouteConfig[]) => {
+  return routes.filter(route => canOpenRouteInWindow(route))
 }

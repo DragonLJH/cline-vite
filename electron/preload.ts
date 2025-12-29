@@ -11,6 +11,7 @@ interface ElectronAPI {
   maximizeWindow: () => void
   closeWindow: () => void
   toggleMaximize: () => void
+  openWindow: (path: string, title: string) => void
 
   // 文件操作
   openFileDialog: (options?: {
@@ -62,6 +63,7 @@ const electronAPI: ElectronAPI = {
   maximizeWindow: () => ipcRenderer.invoke('window:maximize'),
   closeWindow: () => ipcRenderer.invoke('window:close'),
   toggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
+  openWindow: (path: string, title: string) => ipcRenderer.invoke('window:open', path, title),
 
   // 文件对话框
   openFileDialog: (options) => ipcRenderer.invoke('dialog:openFile', options),

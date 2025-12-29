@@ -6,5 +6,8 @@ export const pageMeta = {
   title: '计数器',
   description: '使用 Zustand 状态管理的计数器示例',
   path: '/counter',
-  icon: '🔢'
+  icon: '🔢',
+  permissions: [], // 无特殊权限要求
+  showInMenu: true, // 在菜单中显示
+  canOpenWindow: true // 支持单独窗口
 }

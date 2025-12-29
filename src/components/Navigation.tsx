@@ -1,14 +1,54 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { getRoutesWithMeta, getNavigationItems } from '../router'
+
+interface NavItem {
+  path: string
+  label: string
+  description: string
+  canOpenWindow: boolean
+}
 
 const Navigation: React.FC = () => {
   const location = useLocation()
+  const [navItems, setNavItems] = useState<NavItem[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const navItems = [
-    { path: '/', label: '🏠 首页', description: '应用首页' },
-    { path: '/counter', label: '🔢 计数器', description: 'Zustand 状态管理示例' },
-    { path: '/about', label: 'ℹ️ 关于', description: '技术栈介绍' }
-  ]
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const routes = await getRoutesWithMeta()
+        const items = getNavigationItems(routes)
+        setNavItems(items)
+      } catch (error) {
+        console.error('Failed to load navigation items:', error)
+        // 降级到默认导航项
+        // setNavItems([
+        //   { path: '/', label: '🏠 首页', description: '应用首页', canOpenWindow: false },
+        //   { path: '/counter', label: '🔢 计数器', description: 'Zustand 状态管理示例', canOpenWindow: false },
+        //   { path: '/about', label: 'ℹ️ 关于', description: '技术栈介绍', canOpenWindow: false }
+        // ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadNavigation()
+  }, [])
+
+  const handleOpenInWindow = async (path: string, title: string) => {
+    try {
+      console.log('Opening window:', { path, title })
+      if (window.electronAPI?.openWindow) {
+        const result = await window.electronAPI.openWindow(path, title)
+        console.log('Window open result:', result)
+      } else {
+        console.error('electronAPI.openWindow not available')
+      }
+    } catch (error) {
+      console.error('Failed to open window:', error)
+    }
+  }
 
   return (
     <nav style={{
@@ -48,22 +88,46 @@ const Navigation: React.FC = () => {
         {/* 导航菜单 */}
         <div style={{ display: 'flex', gap: '1rem' }}>
           {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              style={{
-                padding: '0.5rem 1rem',
-                color: 'white',
-                textDecoration: 'none',
-                borderRadius: '6px',
-                fontWeight: '500',
-                background: location.pathname === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
-                transition: 'all 0.2s'
-              }}
-              title={item.description}
-            >
-              {item.label}
-            </Link>
+            <div key={item.path} style={{ position: 'relative' }}>
+              <Link
+                to={item.path}
+                style={{
+                  padding: '0.5rem 1rem',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '6px',
+                  fontWeight: '500',
+                  background: location.pathname === item.path ? 'rgba(255,255,255,0.2)' : 'transparent',
+                  transition: 'all 0.2s',
+                  display: 'inline-block'
+                }}
+                title={item.description}
+              >
+                {item.label}
+              </Link>
+              {item.canOpenWindow && (
+                <button
+                  onClick={() => handleOpenInWindow(item.path, item.label.replace(/^[^\s]+\s/, ''))}
+                  style={{
+                    marginLeft: '0.25rem',
+                    padding: '0.25rem 0.5rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    opacity: 0.7,
+                    transition: 'opacity 0.2s'
+                  }}
+                  title="在新窗口中打开"
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                >
+                  🪟
+                </button>
+              )}
+            </div>
           ))}
         </div>
 

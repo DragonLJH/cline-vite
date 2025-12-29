@@ -9,6 +9,7 @@ interface ElectronAPI {
   maximizeWindow: () => void
   closeWindow: () => void
   toggleMaximize: () => void
+  openWindow: (path: string, title: string) => void
 
   // 文件操作
   openFileDialog: (options?: {

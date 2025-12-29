@@ -6,5 +6,8 @@ export const pageMeta = {
   title: '首页',
   description: '应用首页，展示核心功能特性',
   path: '/',
-  icon: '🏠'
+  icon: '🏠',
+  permissions: [], // 无特殊权限要求
+  showInMenu: true, // 在菜单中显示
+  canOpenWindow: false // 不支持单独窗口
 }

@@ -74,6 +74,61 @@ ipcMain.handle('window:toggle-maximize', () => {
   }
 })
 
+ipcMain.handle('window:open', async (event, routePath: string, title: string) => {
+  try {
+    // 获取 preload 脚本路径
+    const preloadPath = path.join(app.getAppPath(), 'dist', 'electron', 'preload.js')
+
+    const newWindow = new BrowserWindow({
+      width: 1000,
+      height: 700,
+      title: title,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: preloadPath
+      },
+      // Windows 平台使用自定义标题栏
+      ...(process.platform === 'win32' && {
+        frame: false,
+        titleBarStyle: 'hidden',
+        titleBarOverlay: false
+      }),
+      // macOS 保留原生标题栏
+      ...(process.platform === 'darwin' && {
+        titleBarStyle: 'hiddenInset'
+      }),
+      // Linux 根据需要配置
+      ...(process.platform === 'linux' && {
+        frame: true
+      })
+    })
+
+    // 开发模式加载 Vite 服务器，生产模式加载打包文件
+    if (process.env.NODE_ENV === 'development') {
+      // 对于HashRouter，需要使用 #/path 格式
+      const hashPath = routePath === '/' ? '' : routePath
+      await newWindow.loadURL(`http://localhost:5173/#${hashPath}?newwindow=true`)
+    } else {
+      // 在生产模式下，从应用目录加载 index.html 并导航到指定路径
+      const indexPath = path.join(app.getAppPath(), 'dist', 'index.html')
+      const hashPath = routePath === '/' ? '' : routePath
+      const fileUrl = `file://${indexPath.replace(/\\/g, '/')}#${hashPath}?newwindow=true`
+      await newWindow.loadURL(fileUrl)
+    }
+
+    // 开发模式打开开发者工具
+    if (process.env.NODE_ENV === 'development') {
+      newWindow.webContents.openDevTools()
+    }
+
+    return { success: true, windowId: newWindow.id }
+  } catch (error) {
+    console.error('Failed to open window:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+})
+
 // 文件对话框
 ipcMain.handle('dialog:openFile', async (event, options) => {
   const result = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow()!, {
