@@ -2,6 +2,8 @@ import React, { Suspense } from 'react'
 import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import AppTop from './components/AppTop'
 import { generateRoutes, getRoutesWithMeta, RouteConfig } from './router'
+// 导入主题系统，确保在应用启动时初始化
+import './stores/themeStore'
 import './App.css'
 
 // 加载组件

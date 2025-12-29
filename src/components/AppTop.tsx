@@ -92,8 +92,8 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
       onDoubleClick={handleDoubleClick}
       style={{
         height: '48px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
+        background: 'var(--gradient-primary)',
+        color: 'var(--text-inverse)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

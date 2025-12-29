@@ -32,7 +32,7 @@ const AboutPage: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)',
+      background: 'var(--bg-primary)',
       padding: '2rem'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -42,7 +42,8 @@ const AboutPage: React.FC = () => {
             fontSize: '3rem',
             fontWeight: 'bold',
             marginBottom: '1rem',
-            background: 'linear-gradient(45deg, #7c3aed, #06b6d4)',
+            color: 'var(--text-primary)',
+            background: 'var(--gradient-primary)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -51,7 +52,7 @@ const AboutPage: React.FC = () => {
           </h1>
           <p style={{
             fontSize: '1.25rem',
-            color: '#64748b',
+            color: 'var(--text-secondary)',
             maxWidth: '600px',
             margin: '0 auto'
           }}>
@@ -66,7 +67,7 @@ const AboutPage: React.FC = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '2rem',
-            color: '#1e293b'
+            color: 'var(--text-primary)'
           }}>
             🛠️ 技术栈
           </h2>
@@ -79,17 +80,17 @@ const AboutPage: React.FC = () => {
               <div
                 key={index}
                 style={{
-                  background: 'white',
+                  background: 'var(--bg-card)',
                   padding: '1.5rem',
                   borderRadius: '12px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e2e8f0'
+                  boxShadow: 'var(--shadow-md)',
+                  border: '1px solid var(--border-primary)'
                 }}
               >
                 <h3 style={{
                   marginTop: 0,
                   marginBottom: '1rem',
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                   fontSize: '1.125rem',
                   fontWeight: '600'
                 }}>
@@ -106,7 +107,7 @@ const AboutPage: React.FC = () => {
                       style={{
                         margin: '0.5rem 0',
                         padding: '0.25rem 0',
-                        color: '#6b7280'
+                        color: 'var(--text-secondary)'
                       }}
                     >
                       {item}
@@ -120,16 +121,16 @@ const AboutPage: React.FC = () => {
 
         {/* 主要特性 */}
         <div style={{
-          background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+          background: 'var(--bg-secondary)',
           padding: '2rem',
           borderRadius: '16px',
-          borderLeft: '4px solid #3b82f6'
+          borderLeft: '4px solid var(--btn-primary)'
         }}>
           <h2 style={{
             fontSize: '2rem',
             fontWeight: 'bold',
             marginBottom: '1.5rem',
-            color: '#1e293b'
+            color: 'var(--text-primary)'
           }}>
             ✨ 主要特性
           </h2>
@@ -145,10 +146,11 @@ const AboutPage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '0.75rem',
-                  background: 'white',
+                  background: 'var(--bg-card)',
                   borderRadius: '8px',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                  color: '#374151'
+                  boxShadow: 'var(--shadow-sm)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-primary)'
                 }}
               >
                 <span style={{ marginRight: '0.75rem' }}>{feature}</span>
@@ -162,15 +164,16 @@ const AboutPage: React.FC = () => {
           marginTop: '3rem',
           textAlign: 'center',
           padding: '2rem',
-          background: 'white',
+          background: 'var(--bg-card)',
           borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-primary)'
         }}>
           <h3 style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
             marginBottom: '1rem',
-            color: '#1e293b'
+            color: 'var(--text-primary)'
           }}>
             🔧 系统信息和 API 演示
           </h3>
@@ -183,33 +186,63 @@ const AboutPage: React.FC = () => {
           }}>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
                 {window.electronAPI?.platform || '未知'}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>操作系统</div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                操作系统
+              </div>
             </div>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
                 {window.electronAPI?.version || '未知'}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>Electron 版本</div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                Electron 版本
+              </div>
             </div>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#f59e0b' }}>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
                 {window.electronAPI?.appInfo.isDev ? '开发环境' : '生产环境'}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>运行模式</div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                运行模式
+              </div>
             </div>
           </div>
 
@@ -281,7 +314,10 @@ const AboutPage: React.FC = () => {
             </button>
           </div>
 
-          <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '0.875rem'
+          }}>
             通过 Preload API 安全地访问系统功能，无需 nodeIntegration
           </p>
         </div>
@@ -291,15 +327,16 @@ const AboutPage: React.FC = () => {
           marginTop: '3rem',
           textAlign: 'center',
           padding: '2rem',
-          background: 'white',
+          background: 'var(--bg-card)',
           borderRadius: '12px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-primary)'
         }}>
           <h3 style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
             marginBottom: '1rem',
-            color: '#1e293b'
+            color: 'var(--text-primary)'
           }}>
             📂 项目信息
           </h3>
@@ -311,30 +348,69 @@ const AboutPage: React.FC = () => {
           }}>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>v1.0.0</div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>版本</div>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
+                v1.0.0
+              </div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                版本
+              </div>
             </div>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>React + TS</div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>技术栈</div>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
+                React + TS
+              </div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                技术栈
+              </div>
             </div>
             <div style={{
               padding: '1rem',
-              background: '#f8fafc',
-              borderRadius: '8px'
+              background: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#f59e0b' }}>Electron</div>
-              <div style={{ fontSize: '0.875rem', color: '#64748b' }}>运行环境</div>
+              <div style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: 'var(--btn-primary)'
+              }}>
+                Electron
+              </div>
+              <div style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)'
+              }}>
+                运行环境
+              </div>
             </div>
           </div>
-          <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '0.875rem'
+          }}>
             一个现代化的桌面应用程序示例项目
           </p>
         </div>

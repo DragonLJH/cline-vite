@@ -19,7 +19,7 @@ const CounterPage: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #eff6ff 100%)',
+      background: 'var(--bg-primary)',
       padding: '2rem'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -29,14 +29,18 @@ const CounterPage: React.FC = () => {
             fontSize: '3rem',
             fontWeight: 'bold',
             marginBottom: '1rem',
-            background: 'linear-gradient(45deg, #16a34a, #2563eb)',
+            color: 'var(--text-primary)',
+            background: 'var(--gradient-primary)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
             🔢 计数器
           </h1>
-          <p style={{ fontSize: '1.25rem', color: '#6b7280' }}>
+          <p style={{
+            fontSize: '1.25rem',
+            color: 'var(--text-secondary)'
+          }}>
             使用 Zustand 状态管理的计数器示例
           </p>
         </div>
@@ -75,10 +79,11 @@ const CounterPage: React.FC = () => {
 
         {/* 操作按钮 */}
         <div style={{
-          background: 'white',
+          background: 'var(--bg-card)',
           padding: '2rem',
           borderRadius: '16px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-primary)',
           marginBottom: '2rem'
         }}>
           <h2 style={{
@@ -86,7 +91,7 @@ const CounterPage: React.FC = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '2rem',
-            color: '#1f2937'
+            color: 'var(--text-primary)'
           }}>
             🎮 操作面板
           </h2>
@@ -151,7 +156,12 @@ const CounterPage: React.FC = () => {
 
           {/* 批量操作 */}
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#374151' }}>
+            <h3 style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              marginBottom: '1rem',
+              color: 'var(--text-primary)'
+            }}>
               批量操作
             </h3>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -201,17 +211,18 @@ const CounterPage: React.FC = () => {
 
         {/* 状态信息 */}
         <div style={{
-          background: 'white',
+          background: 'var(--bg-card)',
           padding: '2rem',
           borderRadius: '16px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-primary)'
         }}>
           <h2 style={{
             fontSize: '1.5rem',
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '2rem',
-            color: '#1f2937'
+            color: 'var(--text-primary)'
           }}>
             📊 状态信息
           </h2>
@@ -221,24 +232,29 @@ const CounterPage: React.FC = () => {
             gap: '1rem'
           }}>
             <div style={{
-              background: '#f9fafb',
+              background: 'var(--bg-secondary)',
               padding: '1.5rem',
               borderRadius: '12px',
               textAlign: 'center',
-              border: '1px solid #e5e7eb'
+              border: '1px solid var(--border-primary)'
             }}>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>
+              <div style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                marginBottom: '0.5rem',
+                color: 'var(--text-primary)'
+              }}>
                 {count}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>当前值</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>当前值</div>
             </div>
 
             <div style={{
-              background: '#f9fafb',
+              background: 'var(--bg-secondary)',
               padding: '1.5rem',
               borderRadius: '12px',
               textAlign: 'center',
-              border: '1px solid #e5e7eb'
+              border: '1px solid var(--border-primary)'
             }}>
               <div style={{
                 fontSize: '2rem',
@@ -248,25 +264,25 @@ const CounterPage: React.FC = () => {
               }}>
                 {getStatusText()}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>状态</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>状态</div>
             </div>
 
             <div style={{
-              background: '#f9fafb',
+              background: 'var(--bg-secondary)',
               padding: '1.5rem',
               borderRadius: '12px',
               textAlign: 'center',
-              border: '1px solid #e5e7eb'
+              border: '1px solid var(--border-primary)'
             }}>
               <div style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
                 marginBottom: '0.5rem',
-                color: count >= -10 && count <= 10 ? '#10b981' : '#dc2626'
+                color: count >= -10 && count <= 10 ? 'var(--btn-primary)' : '#dc2626'
               }}>
                 {count >= -10 && count <= 10 ? '✓' : '⚠️'}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>范围状态</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>范围状态</div>
             </div>
           </div>
         </div>

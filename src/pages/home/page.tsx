@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #faf5ff 100%)',
+      background: 'var(--bg-primary)',
       padding: '2rem'
     }}>
       <div style={{
@@ -26,7 +26,8 @@ const HomePage: React.FC = () => {
             fontSize: '3rem',
             fontWeight: 'bold',
             marginBottom: '1rem',
-            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)',
+            color: 'var(--text-primary)',
+            background: 'var(--gradient-primary)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -35,7 +36,7 @@ const HomePage: React.FC = () => {
           </h1>
           <p style={{
             fontSize: '1.25rem',
-            color: '#6b7280',
+            color: 'var(--text-secondary)',
             maxWidth: '600px',
             margin: '0 auto'
           }}>
@@ -50,7 +51,7 @@ const HomePage: React.FC = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '2rem',
-            color: '#1f2937'
+            color: 'var(--text-primary)'
           }}>
             🎯 核心特性
           </h2>
@@ -63,21 +64,21 @@ const HomePage: React.FC = () => {
               <div
                 key={index}
                 style={{
-                  background: 'white',
+                  background: 'var(--bg-card)',
                   padding: '1.5rem',
                   borderRadius: '12px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #e5e7eb',
+                  boxShadow: 'var(--shadow-md)',
+                  border: '1px solid var(--border-primary)',
                   transition: 'all 0.3s',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
                 }}
               >
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{feature.icon}</div>
@@ -85,11 +86,16 @@ const HomePage: React.FC = () => {
                   fontSize: '1.125rem',
                   fontWeight: '600',
                   marginBottom: '0.5rem',
-                  color: '#1f2937'
+                  color: 'var(--text-primary)'
                 }}>
                   {feature.name}
                 </h3>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>{feature.desc}</p>
+                <p style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.875rem'
+                }}>
+                  {feature.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -97,18 +103,18 @@ const HomePage: React.FC = () => {
 
         {/* 快速导航 */}
         <div style={{
-          background: 'white',
+          background: 'var(--bg-card)',
           padding: '2rem',
           borderRadius: '16px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #e5e7eb'
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-primary)'
         }}>
           <h2 style={{
             fontSize: '2rem',
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '2rem',
-            color: '#1f2937'
+            color: 'var(--text-primary)'
           }}>
             🧭 快速导航
           </h2>
@@ -124,22 +130,22 @@ const HomePage: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 padding: '1rem 2rem',
-                background: 'linear-gradient(45deg, #10b981, #059669)',
-                color: 'white',
+                background: 'var(--gradient-secondary)',
+                color: 'var(--text-inverse)',
                 textDecoration: 'none',
                 borderRadius: '12px',
                 fontWeight: '600',
                 fontSize: '1.125rem',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                boxShadow: 'var(--shadow-md)',
                 transition: 'all 0.3s'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
               }}
             >
               <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🔢</span>
@@ -151,22 +157,22 @@ const HomePage: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 padding: '1rem 2rem',
-                background: 'linear-gradient(45deg, #3b82f6, #2563eb)',
-                color: 'white',
+                background: 'var(--gradient-primary)',
+                color: 'var(--text-inverse)',
                 textDecoration: 'none',
                 borderRadius: '12px',
                 fontWeight: '600',
                 fontSize: '1.125rem',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                boxShadow: 'var(--shadow-md)',
                 transition: 'all 0.3s'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
               }}
             >
               <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>ℹ️</span>
@@ -177,7 +183,7 @@ const HomePage: React.FC = () => {
 
         {/* 底部信息 */}
         <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-          <p style={{ color: '#9ca3af' }}>
+          <p style={{ color: 'var(--text-muted)' }}>
             开始探索这个现代化桌面应用的功能吧！
           </p>
         </div>

@@ -1544,6 +1544,265 @@ React.useEffect(() => {
 - ✅ 提升应用启动时的用户体验
 - ✅ 完整的错误处理和状态管理
 
+## Settings 页面和主题系统集成
+
+### 20. 添加 Settings 页面和主题切换功能
+
+#### 功能概述
+新增 Settings 页面，提供主题切换功能，支持浅色和深色主题，并实现持久化存储。
+
+#### 创建主题状态管理 Store
+
+**src/stores/themeStore.ts：**
+```typescript
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+export type ThemeType = 'light' | 'dark'
+
+interface ThemeState {
+  theme: ThemeType
+  setTheme: (theme: ThemeType) => void
+  toggleTheme: () => void
+}
+
+// 完整的主题配置（包含所有CSS变量）
+export const themes = {
+  light: { /* 浅色主题变量 */ },
+  dark: { /* 深色主题变量 */ }
+}
+
+// 应用主题到DOM
+const applyTheme = (theme: ThemeType) => {
+  const root = document.documentElement
+  const themeVars = themes[theme]
+  Object.entries(themeVars).forEach(([property, value]) => {
+    root.style.setProperty(property, value)
+  })
+  root.setAttribute('data-theme', theme)
+}
+
+export const useThemeStore = create<ThemeState>()(
+  persist(
+    (set, get) => ({
+      theme: 'light',
+      setTheme: (theme: ThemeType) => {
+        set({ theme })
+        applyTheme(theme)
+      },
+      toggleTheme: () => {
+        const currentTheme = get().theme
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light'
+        set({ theme: newTheme })
+        applyTheme(newTheme)
+      }
+    }),
+    {
+      name: 'theme-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) applyTheme(state.theme)
+      }
+    }
+  )
+)
+
+// 初始化主题
+if (typeof window !== 'undefined') {
+  const theme = useThemeStore.getState().theme
+  applyTheme(theme)
+}
+```
+
+#### 创建 Settings 页面文件结构
+
+**src/pages/settings/index.tsx：**
+```typescript
+// Settings 页面路由入口
+export { default } from './page'
+
+// 页面元数据
+export const pageMeta = {
+  title: '设置',
+  description: '应用设置和个性化配置',
+  path: '/settings',
+  icon: '⚙️'
+}
+```
+
+**src/pages/settings/page.tsx：**
+```typescript
+import React from 'react'
+import { useThemeStore, type ThemeType } from '../../stores/themeStore'
+
+const SettingsPage: React.FC = () => {
+  const { theme, setTheme, toggleTheme } = useThemeStore()
+
+  // 完整的主题设置UI，包含：
+  // - 主题选项卡片（浅色/深色）
+  // - 选中状态指示器
+  // - 快速切换按钮
+  // - 响应式设计
+  // - 悬停效果和动画
+
+  return (
+    <div style={{ /* 使用CSS变量的完整设置页面 */ }}>
+      {/* 主题设置卡片 */}
+      {/* 其他设置占位符 */}
+      {/* 底部信息 */}
+    </div>
+  )
+}
+
+export default SettingsPage
+```
+
+**src/pages/settings/index.scss：**
+```scss
+// Settings 页面专用样式
+.settings-page {
+  // 响应式设计
+  @media (max-width: 768px) {
+    // 移动端样式调整
+  }
+
+  @media (max-width: 480px) {
+    // 小屏设备样式调整
+  }
+}
+
+// 深色主题特殊样式
+[data-theme="dark"] {
+  .settings-page {
+    // 深色主题下的特殊调整
+  }
+}
+
+// 动画效果
+@keyframes theme-transition {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.theme-transition {
+  animation: theme-transition 0.3s ease-in-out;
+}
+```
+
+#### 技术实现要点
+
+**1. Zustand 状态管理**
+- 使用 `persist` 中间件实现主题持久化存储
+- 支持 `setTheme` 和 `toggleTheme` 两种切换方式
+- 自动状态同步和类型安全
+
+**2. CSS 变量主题系统**
+- 定义完整的主题变量集合（背景、文字、边框、按钮、阴影等）
+- 动态应用主题到 `:root` 元素
+- 支持 `data-theme` 属性用于额外样式判断
+
+**3. 响应式UI设计**
+- 卡片式布局，清晰的视觉层次
+- 悬停效果和状态指示器
+- 移动端适配和触摸友好
+
+**4. 用户体验优化**
+- 实时主题预览和切换
+- 持久化存储，重启应用后保持设置
+- 平滑的过渡动画和视觉反馈
+
+#### 集成结果
+- ✅ Settings 页面成功集成到路由系统
+- ✅ 导航菜单显示：⚙️ 设置
+- ✅ 完整的主题切换功能（浅色/深色）
+- ✅ 持久化存储和状态同步
+- ✅ 响应式设计和动画效果
+- ✅ TypeScript 类型安全
+- ✅ CSS 变量主题系统
+
+## 全局主题系统实现
+
+### 21. 全局主题系统部署
+
+#### 问题发现
+虽然 Settings 页面已经实现了主题切换功能，但其他页面（如首页、计数器、关于页面）仍然使用硬编码的颜色值，导致主题切换只在 Settings 页面有效。
+
+#### 全局实现方案
+
+**1. 确保主题系统在应用启动时初始化**
+```typescript
+// src/App.tsx
+import './stores/themeStore'  // 添加此行确保主题系统初始化
+```
+
+**2. 将所有页面改为使用 CSS 变量**
+- **首页 (src/pages/home/page.tsx)**：将硬编码颜色改为 `var(--bg-primary)`、`var(--text-primary)` 等
+- **计数器页面 (src/pages/counter/page.tsx)**：同样使用 CSS 变量替换硬编码颜色
+- **关于页面 (src/pages/about/page.tsx)**：同样使用 CSS 变量替换硬编码颜色
+- **AppTop 组件 (src/components/AppTop.tsx)**：标题栏背景使用 `var(--gradient-primary)`
+
+**3. 创建全局 CSS 变量基础定义**
+```css
+/* src/index.css */
+:root {
+  /* 默认主题变量（浅色主题） */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f8fafc;
+
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --border-focus: #3b82f6;
+
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-secondary: #f1f5f9;
+  --btn-secondary-hover: #e2e8f0;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+```
+
+#### 技术要点
+
+**CSS 变量主题系统**
+- 使用 CSS 变量定义完整的主题色彩系统
+- 支持背景色、文字色、边框色、按钮色、阴影、渐变等
+- 动态切换通过 JavaScript 修改 `:root` 元素的 CSS 变量实现
+
+**组件级主题适配**
+- 所有页面组件都使用 `var(--variable-name)` 语法
+- 确保主题切换的实时性和一致性
+- 保持组件的响应式设计和动画效果
+
+**初始化策略**
+- 在 `App.tsx` 中导入主题 store 确保初始化
+- 在 `themeStore.ts` 中实现自动初始化逻辑
+- 使用 Zustand 的 `persist` 中间件保持主题设置
+
+#### 全局主题实现结果
+- ✅ **应用启动时自动初始化主题系统**
+- ✅ **所有页面都响应主题切换**：首页、计数器、关于、设置
+- ✅ **AppTop 组件主题适配**：标题栏背景和文字颜色
+- ✅ **实时主题切换**：点击设置页面主题选项立即生效
+- ✅ **持久化存储**：重启应用后保持用户主题偏好
+- ✅ **平滑过渡**：主题切换带有视觉过渡效果
+- ✅ **完整的视觉一致性**：所有组件都使用统一的主题变量
+
+现在整个应用的所有页面和组件都会完美响应主题切换，为用户提供一致的视觉体验！
+
 ## 依赖安装成功确认
 - ✅ Electron (^25.9.8) - 成功安装，使用国内镜像源解决网络问题
 - ✅ electron-builder (^24.13.3) - 成功安装

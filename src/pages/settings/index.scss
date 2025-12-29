@@ -1,0 +1,91 @@
+// Settings 页面专用样式
+.settings-page {
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: 1rem !important;
+
+    .settings-header {
+      margin-bottom: 2rem !important;
+
+      h1 {
+        font-size: 2rem !important;
+      }
+
+      p {
+        font-size: 1rem !important;
+      }
+    }
+
+    .settings-grid {
+      gap: 1.5rem !important;
+    }
+
+    .settings-card {
+      padding: 1.5rem !important;
+    }
+
+    .theme-options {
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem !important;
+    }
+
+    .theme-option {
+      padding: 1.25rem !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem !important;
+
+    .settings-header {
+      margin-bottom: 1.5rem !important;
+
+      h1 {
+        font-size: 1.75rem !important;
+      }
+    }
+
+    .settings-card {
+      padding: 1.25rem !important;
+    }
+  }
+}
+
+// 深色主题特殊样式
+[data-theme="dark"] {
+  .settings-page {
+    // 深色主题下的特殊调整可以在这里添加
+  }
+}
+
+// 动画效果
+@keyframes theme-transition {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.theme-transition {
+  animation: theme-transition 0.3s ease-in-out;
+}
+
+// 自定义滚动条样式（如果需要）
+.settings-scroll {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--border-secondary);
+    }
+  }
+}
