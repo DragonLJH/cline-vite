@@ -1,3 +1,8 @@
+// 导入 Tailwind CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 // 全局样式重置
 * {
   box-sizing: border-box;
@@ -14,8 +19,8 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: #1f2937;
-  background: #f9fafb;
+  color: var(--text-primary);
+  background: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -142,16 +147,16 @@ body {
 
 // 卡片样式
 .card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-primary);
   overflow: hidden;
 }
 
 .card-header {
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .card-body {
@@ -160,8 +165,8 @@ body {
 
 .card-footer {
   padding: 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-primary);
 }
 
 // 输入框样式
@@ -169,21 +174,23 @@ body {
   display: block;
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-primary);
   border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   font-size: 0.875rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .input::placeholder {
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 // 标签样式
@@ -191,7 +198,7 @@ body {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 

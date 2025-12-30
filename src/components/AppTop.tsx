@@ -98,152 +98,61 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
 
   return (
     <div
-      className="app-top"
+      className="app-top h-12 text-white flex items-center justify-between px-4 relative select-none cursor-default bg-[var(--gradient-primary)]"
       onDoubleClick={handleDoubleClick}
-      style={{
-        height: '48px',
-        background: 'var(--gradient-primary)',
-        color: 'var(--text-inverse)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 16px',
-        position: 'relative',
-        WebkitUserSelect: 'none',
-        userSelect: 'none',
-        cursor: platform === 'win32' ? 'default' : 'auto'
-      } as any}
     >
       {/* 左侧：品牌和导航 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+      <div className="flex items-center gap-6">
         {/* 品牌信息 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '32px',
-            height: '32px',
-            background: 'rgba(255,255,255,0.2)',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '16px'
-          }}>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-white/20 rounded-md flex items-center justify-center text-base">
             ⚛️
           </div>
           <div>
-            <div style={{ fontSize: '14px', fontWeight: '600', lineHeight: '1' }}>
+            <div className="text-sm font-semibold leading-none">
               Vite + React + Electron
             </div>
-            <div style={{ fontSize: '10px', opacity: 0.8, lineHeight: '1' }}>
+            <div className="text-xs opacity-80 leading-none">
               现代化桌面应用
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* 右侧：状态指示器和窗口控制 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div className="flex items-center gap-4">
         {/* 开发环境指示器 */}
         {window.electronAPI?.appInfo.isDev && (
-          <div style={{
-            padding: '4px 8px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '12px',
-            fontSize: '10px',
-            fontWeight: '500'
-          }}>
+          <div className="px-2 py-1 bg-white/10 rounded-xl text-xs font-medium">
             DEV
           </div>
         )}
 
         {/* 平台信息 */}
-        <div style={{
-          padding: '4px 8px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '12px',
-          fontSize: '10px',
-          fontWeight: '500'
-        }}>
+        <div className="px-2 py-1 bg-white/10 rounded-xl text-xs font-medium">
           {platform === 'win32' ? 'Windows' : platform === 'darwin' ? 'macOS' : platform === 'linux' ? 'Linux' : platform}
         </div>
 
         {/* 窗口控制按钮（仅 Windows） */}
         {showWindowControls && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '2px'
-          } as any}>
+          <div className="flex items-center gap-0.5">
             <button
               onClick={handleMinimize}
-              style={{
-                width: '32px',
-                height: '24px',
-                background: 'transparent',
-                border: 'none',
-                color: 'white',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '2px',
-                fontSize: '12px',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              className="w-8 h-6 bg-transparent border-none text-white cursor-pointer flex items-center justify-center rounded-sm text-xs transition-colors hover:bg-white/10"
               title="最小化"
             >
               ─
             </button>
             <button
               onClick={handleMaximize}
-              style={{
-                width: '32px',
-                height: '24px',
-                background: 'transparent',
-                border: 'none',
-                color: 'white',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '2px',
-                fontSize: '12px',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              className="w-8 h-6 bg-transparent border-none text-white cursor-pointer flex items-center justify-center rounded-sm text-xs transition-colors hover:bg-white/10"
               title={isMaximized ? '还原' : '最大化'}
             >
               {isMaximized ? '❐' : '□'}
             </button>
             <button
               onClick={handleClose}
-              style={{
-                width: '32px',
-                height: '24px',
-                background: 'transparent',
-                border: 'none',
-                color: '#ef4444',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '2px',
-                fontSize: '12px',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#ef4444'
-                e.currentTarget.style.color = 'white'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = '#ef4444'
-              }}
+              className="w-8 h-6 bg-transparent border-none text-red-500 cursor-pointer flex items-center justify-center rounded-sm text-xs transition-colors hover:bg-red-500 hover:text-white"
               title="关闭"
             >
               ✕
@@ -254,22 +163,7 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
 
       {/* 拖拽区域指示器（仅在 Windows 开发模式显示） */}
       {platform === 'win32' && window.electronAPI?.appInfo.isDev && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-          background: 'rgba(0,255,0,0.05)',
-          border: '1px dashed rgba(0,255,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '10px',
-          color: 'rgba(0,255,0,0.7)',
-          fontWeight: '500'
-        }}>
+        <div className="absolute inset-0 pointer-events-none bg-green-500/5 border border-dashed border-green-500/30 flex items-center justify-center text-xs text-green-500/70 font-medium">
           可拖拽区域 (双击最大化)
         </div>
       )}

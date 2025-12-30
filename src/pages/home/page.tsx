@@ -11,89 +11,34 @@ const HomePage: React.FC = () => {
   ]
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'var(--bg-primary)',
-      padding: '2rem'
-    }}>
-      <div style={{
-        maxWidth: '1000px',
-        margin: '0 auto'
-      }}>
+    <div className="min-h-screen p-8 bg-[var(--bg-primary)]">
+      <div className="max-w-4xl mx-auto">
         {/* 头部区域 */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{
-            fontSize: '3rem',
-            fontWeight: 'bold',
-            marginBottom: '1rem',
-            color: 'var(--text-primary)',
-            background: 'var(--gradient-primary)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 text-[var(--text-primary)] bg-[var(--gradient-primary)] bg-clip-text text-transparent">
             🏠 首页
           </h1>
-          <p style={{
-            fontSize: '1.25rem',
-            color: 'var(--text-secondary)',
-            maxWidth: '600px',
-            margin: '0 auto'
-          }}>
+          <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
             欢迎来到 Vite + React + TypeScript + Electron 现代化桌面应用！
           </p>
         </div>
 
         {/* 功能特性网格 */}
-        <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: '2rem',
-            color: 'var(--text-primary)'
-          }}>
+        <div className="mb-12">
+          <h2 className="text-4xl font-bold text-center mb-8 text-[var(--text-primary)]">
             🎯 核心特性
           </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1.5rem'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <div
                 key={index}
-                style={{
-                  background: 'var(--bg-card)',
-                  padding: '1.5rem',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-md)',
-                  border: '1px solid var(--border-primary)',
-                  transition: 'all 0.3s',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                }}
+                className="bg-[var(--bg-card)] p-6 rounded-xl shadow-[var(--shadow-md)] border border-[var(--border-primary)] transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{feature.icon}</div>
-                <h3 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: 'var(--text-primary)'
-                }}>
+                <div className="text-6xl mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-semibold mb-2 text-[var(--text-primary)]">
                   {feature.name}
                 </h3>
-                <p style={{
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.875rem'
-                }}>
+                <p className="text-[var(--text-secondary)] text-sm">
                   {feature.desc}
                 </p>
               </div>
@@ -104,88 +49,31 @@ const HomePage: React.FC = () => {
 
 
         {/* 快速导航 */}
-        <div style={{
-          background: 'var(--bg-card)',
-          padding: '2rem',
-          borderRadius: '16px',
-          boxShadow: 'var(--shadow-lg)',
-          border: '1px solid var(--border-primary)'
-        }}>
-          <h2 style={{
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: '2rem',
-            color: 'var(--text-primary)'
-          }}>
+        <div className="bg-[var(--bg-card)] p-8 rounded-2xl shadow-[var(--shadow-lg)] border border-[var(--border-primary)]">
+          <h2 className="text-4xl font-bold text-center mb-8 text-[var(--text-primary)]">
             🧭 快速导航
           </h2>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap'
-          }}>
+          <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="/counter"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '1rem 2rem',
-                background: 'var(--gradient-secondary)',
-                color: 'var(--text-inverse)',
-                textDecoration: 'none',
-                borderRadius: '12px',
-                fontWeight: '600',
-                fontSize: '1.125rem',
-                boxShadow: 'var(--shadow-md)',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-              }}
+              className="inline-flex items-center px-8 py-4 bg-[var(--gradient-secondary)] text-[var(--text-inverse)] no-underline rounded-xl font-semibold text-lg shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
             >
-              <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🔢</span>
+              <span className="text-2xl mr-2">🔢</span>
               计数器页面
             </a>
             <a
               href="/about"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '1rem 2rem',
-                background: 'var(--gradient-primary)',
-                color: 'var(--text-inverse)',
-                textDecoration: 'none',
-                borderRadius: '12px',
-                fontWeight: '600',
-                fontSize: '1.125rem',
-                boxShadow: 'var(--shadow-md)',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-              }}
+              className="inline-flex items-center px-8 py-4 bg-[var(--gradient-primary)] text-[var(--text-inverse)] no-underline rounded-xl font-semibold text-lg shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
             >
-              <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>ℹ️</span>
+              <span className="text-2xl mr-2">ℹ️</span>
               关于页面
             </a>
           </div>
         </div>
 
         {/* 底部信息 */}
-        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>
+        <div className="text-center mt-12">
+          <p className="text-[var(--text-muted)]">
             开始探索这个现代化桌面应用的功能吧！
           </p>
         </div>

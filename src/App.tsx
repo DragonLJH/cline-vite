@@ -4,32 +4,12 @@ import AppTop from './components/AppTop'
 import { generateRoutes, getRoutesWithMeta, RouteConfig, getNavigationItems } from './router'
 // 导入主题系统，确保在应用启动时初始化
 import './stores/themeStore'
-import './App.css'
+import './App.scss'
 
 // 加载组件
 const LoadingSpinner = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '200px',
-    fontSize: '1.125rem',
-    color: '#6b7280'
-  }}>
-    <div style={{
-      width: '24px',
-      height: '24px',
-      border: '2px solid #e5e7eb',
-      borderTop: '2px solid #3b82f6',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
-    }}></div>
-    <style>{`
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `}</style>
+  <div className="flex justify-center items-center h-48 text-lg text-gray-500">
+    <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
   </div>
 )
 
@@ -68,97 +48,33 @@ const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
   }
 
   return (
-    <aside style={{
-      width: '280px',
-      background: 'var(--bg-secondary)',
-      borderRight: '1px solid var(--border-primary)',
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '1rem 0'
-    }}>
+    <aside className="w-70 flex flex-col py-4 bg-[var(--bg-secondary)] border-r border-[var(--border-primary)]">
       {/* 侧边栏头部 */}
-      <div style={{
-        padding: '1rem',
-        borderBottom: '1px solid var(--border-primary)',
-        marginBottom: '1rem'
-      }}>
-        <h2 style={{
-          margin: 0,
-          fontSize: '1.25rem',
-          fontWeight: '600',
-          color: 'var(--text-primary)',
-          textAlign: 'center'
-        }}>
+      <div className="px-4 py-4 mb-4 border-b border-[var(--border-primary)]">
+        <h2 className="m-0 text-xl font-semibold text-center text-[var(--text-primary)]">
           🧭 页面导航
         </h2>
       </div>
 
       {/* 导航菜单 */}
-      <nav style={{ flex: 1, padding: '0 1rem' }}>
+      <nav className="flex-1 px-4">
         {navItems.map((item) => (
-          <div key={item.path} style={{
-            marginBottom: '0.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
+          <div key={item.path} className="mb-2 flex items-center gap-2">
             <Link
               to={item.path}
-              style={{
-                flex: 1,
-                padding: '0.75rem 1rem',
-                background: location.pathname === item.path ? 'var(--gradient-primary)' : 'var(--bg-card)',
-                color: location.pathname === item.path ? 'var(--text-inverse)' : 'var(--text-primary)',
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontWeight: '500',
-                fontSize: '0.95rem',
-                boxShadow: 'var(--shadow-sm)',
-                transition: 'all 0.3s',
-                border: location.pathname === item.path ? 'none' : '1px solid var(--border-primary)',
-                display: 'block'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-              }}
+              className={`flex-1 p-3 block no-underline rounded-lg font-medium text-sm transition-all duration-300 ${
+                location.pathname === item.path
+                  ? 'bg-[var(--gradient-primary)] text-[var(--text-inverse)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5'
+                  : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-primary)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5'
+              }`}
             >
               {item.label}
             </Link>
             {item.canOpenWindow && (
               <button
                 onClick={() => handleOpenInWindow(item.path, item.label.replace(/^[^\s]+\s/, ''))}
-                style={{
-                  padding: '0.5rem',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-primary)',
-                  borderRadius: '6px',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem',
-                  opacity: 0.7,
-                  transition: 'all 0.2s',
-                  minWidth: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+                className="p-2 rounded-md cursor-pointer text-xs opacity-70 transition-all duration-200 w-8 h-8 flex items-center justify-center bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:opacity-100 hover:bg-[var(--gradient-primary)] hover:text-[var(--text-inverse)]"
                 title="在新窗口中打开"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                  e.currentTarget.style.background = 'var(--gradient-primary)';
-                  e.currentTarget.style.color = 'var(--text-inverse)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '0.7';
-                  e.currentTarget.style.background = 'var(--bg-card)';
-                  e.currentTarget.style.color = 'var(--text-secondary)';
-                }}
               >
                 🪟
               </button>
@@ -189,36 +105,11 @@ function App() {
 
   if (routesLoading) {
     return (
-      <div style={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-primary)',
-        color: 'var(--text-primary)',
-        fontSize: '1.125rem'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1rem'
-        }}>
-          <div style={{
-            width: '24px',
-            height: '24px',
-            border: '2px solid var(--border-primary)',
-            borderTop: '2px solid var(--gradient-primary)',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
+      <div className="h-screen flex items-center justify-center text-lg bg-[var(--bg-primary)] text-[var(--text-primary)]">
+        <div className="flex items-center gap-4">
+          <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
           正在加载应用...
         </div>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     )
   }
@@ -228,32 +119,17 @@ function App() {
 
   return (
     <Router>
-      <div className="app" style={{
-        height: '100vh',
-        display: 'flex',
-        margin: 0,
-        padding: 0,
-        overflow: 'hidden'
-      }}>
+      <div className="app h-screen flex m-0 p-0 overflow-hidden">
         {/* 顶部标题栏 */}
         <AppTop routes={routes} />
 
         {/* 主体内容区域 */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          overflow: 'hidden'
-        }}>
+        <div className="flex-1 flex overflow-hidden">
           {/* 左侧导航侧边栏（仅在主窗口中显示） */}
           {!isInNewWindow && <Sidebar routes={routes} />}
 
           {/* 主要内容 */}
-          <main className="main-content" style={{
-            flex: 1,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            background: 'var(--bg-primary)'
-          }}>
+          <main className="main-content flex-1 overflow-y-auto overflow-x-hidden bg-[var(--bg-primary)]">
             <Routes>
               {routes.map((route) => (
                 <Route
