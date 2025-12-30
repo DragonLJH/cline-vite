@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { RouteConfig, getNavigationItems } from '../router'
+import { useUserStore } from '../stores/userStore'
 
 interface AppTopProps {
   routes?: RouteConfig[]
@@ -8,8 +9,13 @@ interface AppTopProps {
 
 const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const userStore = useUserStore()
   const [isMaximized, setIsMaximized] = useState(false)
   const [platform, setPlatform] = useState<string>('')
+
+  // 检查是否在新窗口中（通过URL hash参数或window.opener）
+  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
 
   // 使用getNavigationItems生成导航项，包含新窗口打开信息
   const navItems = getNavigationItems(routes)
@@ -93,6 +99,16 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
     }
   }
 
+  const handleLogout = async () => {
+    try {
+      await userStore.logoutAsync()
+      console.log('👋 用户已登出')
+      navigate('/', { replace: true })
+    } catch (error) {
+      console.error('登出失败:', error)
+    }
+  }
+
   // 根据平台决定是否显示窗口控制按钮
   const showWindowControls = platform === 'win32'
 
@@ -119,8 +135,35 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
         </div>
       </div>
 
-      {/* 右侧：状态指示器和窗口控制 */}
+      {/* 右侧：用户信息、状态指示器和窗口控制 */}
       <div className="flex items-center gap-4">
+        {/* 用户信息（登录后显示，仅在主窗口中） */}
+        {!isInNewWindow && (
+          <>
+            {userStore.isLoggedIn ? (
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-xl">
+                <span className="text-sm">
+                  {userStore.currentUser?.avatar} {userStore.currentUser?.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-2 py-0.5 bg-white/20 border-none rounded text-xs text-white cursor-pointer transition-colors hover:bg-white/30"
+                  title="登出"
+                >
+                  登出
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-3 py-1 bg-white/10 border-none rounded-xl text-sm text-white no-underline transition-colors hover:bg-white/20"
+              >
+                登录
+              </Link>
+            )}
+          </>
+        )}
+
         {/* 开发环境指示器 */}
         {window.electronAPI?.appInfo.isDev && (
           <div className="px-2 py-1 bg-white/10 rounded-xl text-xs font-medium">

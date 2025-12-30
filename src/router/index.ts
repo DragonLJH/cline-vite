@@ -31,16 +31,29 @@ export interface RouteConfig {
 // 使用 Vite 的 import.meta.glob 自动发现页面
 const pageModules = import.meta.glob('../pages/*/index.tsx') as Record<string, () => Promise<PageModule>>
 
+console.log('🔍 import.meta.glob 模式: ../pages/*/index.tsx')
+console.log('🔍 发现的页面模块数量:', Object.keys(pageModules).length)
+console.log('🔍 发现的页面模块路径:', Object.keys(pageModules))
+
+// 额外检查login页面
+const loginModule = import.meta.glob('../pages/login/index.tsx')
+console.log('🔍 单独检查login页面:', Object.keys(loginModule))
+
 // 生成路由配置（同步版本，返回懒加载组件）
 export const generateRoutes = (): RouteConfig[] => {
   const routes: RouteConfig[] = []
 
+  console.log(`📋 开始生成路由配置，发现 ${Object.keys(pageModules).length} 个页面模块`)
+
   for (const [path, moduleLoader] of Object.entries(pageModules)) {
+    console.log('🔍 处理页面路径:', path)
     // 从文件路径提取路由路径
     // ../pages/home/index.tsx -> home -> /home
     // ../pages/counter/index.tsx -> counter -> /counter
     const routePath = path.replace('../pages/', '').replace('/index.tsx', '')
     const finalPath = routePath === 'home' ? '/' : `/${routePath}`
+
+    console.log(`📍 生成路由: ${path} -> ${finalPath}`)
 
     // 创建懒加载组件
     const LazyComponent = React.lazy(async () => {
@@ -74,12 +87,17 @@ export const generateRoutes = (): RouteConfig[] => {
     })
   }
 
+  console.log(`🎯 路由生成完成，共 ${routes.length} 个路由:`, routes.map(r => r.path))
+
   // 按路径长度排序，确保根路径 '/' 排在前面
-  return routes.sort((a, b) => {
+  const sortedRoutes = routes.sort((a, b) => {
     if (a.path === '/') return -1
     if (b.path === '/') return 1
     return a.path.length - b.path.length
   })
+
+  console.log('📋 路由排序完成:', sortedRoutes.map(r => r.path))
+  return sortedRoutes
 }
 
 // 异步版本：获取路由配置和元数据（用于导航菜单等）

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getRoutesWithMeta, getNavigationItems } from '../router'
+import { useUserStore } from '../stores/userStore'
 
 interface NavItem {
   path: string
@@ -11,6 +12,8 @@ interface NavItem {
 
 const Navigation: React.FC = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const userStore = useUserStore()
   const [navItems, setNavItems] = useState<NavItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -47,6 +50,16 @@ const Navigation: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to open window:', error)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await userStore.logoutAsync()
+      console.log('👋 用户已登出')
+      navigate('/', { replace: true })
+    } catch (error) {
+      console.error('登出失败:', error)
     }
   }
 
@@ -87,6 +100,25 @@ const Navigation: React.FC = () => {
               )}
             </div>
           ))}
+
+          {/* 用户菜单（登录后显示） */}
+          {userStore.isLoggedIn && (
+            <>
+              <div className="h-6 border-l border-white/20 mx-2"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm opacity-80">
+                  {userStore.currentUser?.avatar} {userStore.currentUser?.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1 bg-white/10 border-none rounded text-white cursor-pointer text-sm transition-colors duration-200 hover:bg-white/20"
+                  title="登出"
+                >
+                  🚪 登出
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* 窗口控制按钮 */}
