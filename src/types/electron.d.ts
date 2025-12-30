@@ -1,4 +1,6 @@
 // Electron preload API 类型定义
+type ThemeType = 'light' | 'dark'
+
 interface ElectronAPI {
   // 系统信息
   platform: string
@@ -43,6 +45,9 @@ interface ElectronAPI {
     version: string
     isDev: boolean
   }
+
+  // 主题同步
+  broadcastThemeChange: (theme: ThemeType) => void
 
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void

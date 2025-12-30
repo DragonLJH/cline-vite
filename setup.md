@@ -2238,3 +2238,37 @@ function App() {
 - ✅ **跨平台兼容** - Windows/macOS/Linux 支持
 
 现在路由系统具备了企业级的权限控制和用户体验优化功能！
+
+## 主题同步功能修复
+
+### 23. 修复 ElectronAPI 类型定义缺失问题
+
+#### 问题描述
+在 `src/stores/themeStore.ts` 文件中，使用了 `window.electronAPI.broadcastThemeChange(theme)` 方法，但 TypeScript 编译器报告错误：类型"ElectronAPI"上不存在属性"broadcastThemeChange"。
+
+#### 解决方案
+在 `src/types/electron.d.ts` 文件中添加缺失的 `broadcastThemeChange` 方法定义。
+
+**修改内容：**
+1. 添加 `ThemeType` 类型定义：`type ThemeType = 'light' | 'dark'`
+2. 在 `ElectronAPI` 接口中添加主题同步方法：
+   ```typescript
+   // 主题同步
+   broadcastThemeChange: (theme: ThemeType) => void
+   ```
+
+#### 修复步骤
+1. **检查 ElectronAPI 类型定义** - 查看 `src/types/electron.d.ts` 文件中的接口定义
+2. **添加缺失的类型定义** - 定义 `ThemeType` 类型和 `broadcastThemeChange` 方法
+3. **验证修复效果** - 运行 `npx tsc --noEmit` 检查 TypeScript 编译是否通过
+
+#### 技术要点
+- **类型安全**：通过 TypeScript 接口确保 API 调用类型正确
+- **主题同步**：支持多窗口间的主题状态同步
+- **跨平台兼容**：Electron API 类型定义支持所有平台
+
+#### 修复结果
+- ✅ **TypeScript 编译通过** - 无类型错误
+- ✅ **主题同步功能正常** - `broadcastThemeChange` 方法可用
+- ✅ **类型安全保证** - 完整的 TypeScript 类型检查
+- ✅ **代码提示支持** - IDE 提供完整的 API 提示

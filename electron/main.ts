@@ -166,6 +166,21 @@ ipcMain.handle('clipboard:writeText', (event, text) => {
   clipboard.writeText(text)
 })
 
+// 主题同步
+ipcMain.on('theme:change', (event, theme: 'light' | 'dark') => {
+  // 获取发送主题更改的窗口ID
+  const senderWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!senderWindow) return
+
+  // 广播到所有其他窗口
+  const allWindows = BrowserWindow.getAllWindows()
+  allWindows.forEach(window => {
+    if (window.id !== senderWindow.id && !window.isDestroyed()) {
+      window.webContents.send('theme:changed', theme)
+    }
+  })
+})
+
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {

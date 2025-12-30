@@ -46,6 +46,9 @@ interface ElectronAPI {
     isDev: boolean
   }
 
+  // 主题同步
+  broadcastThemeChange: (theme: 'light' | 'dark') => void
+
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void
   off: (channel: string, callback: (...args: any[]) => void) => void
@@ -84,6 +87,9 @@ const electronAPI: ElectronAPI = {
     version: '1.0.0',
     isDev: process.env.NODE_ENV === 'development'
   },
+
+  // 主题同步
+  broadcastThemeChange: (theme: 'light' | 'dark') => ipcRenderer.send('theme:change', theme),
 
   // 事件监听 (只允许安全的频道)
   on: (channel: string, callback: (...args: any[]) => void) => {

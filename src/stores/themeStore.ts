@@ -94,6 +94,36 @@ const applyTheme = (theme: ThemeType) => {
   root.setAttribute('data-theme', theme)
 }
 
+// 检查是否为Electron环境
+const isElectron = typeof window !== 'undefined' && window.electronAPI
+
+// 标记是否正在接收外部主题变化，避免重复广播
+let isReceivingExternalChange = false
+
+// 广播主题更改到其他窗口
+const broadcastThemeChange = (theme: ThemeType) => {
+  if (isElectron && !isReceivingExternalChange) {
+    // 只有当不是从广播接收到的更改时，才发送到主进程
+    window.electronAPI.broadcastThemeChange(theme)
+  }
+}
+
+// 监听来自其他窗口的主题更改广播
+const setupThemeBroadcastListener = () => {
+  if (isElectron) {
+    window.electronAPI.on('theme:changed', (event: any, newTheme: ThemeType) => {
+      isReceivingExternalChange = true
+      // 接收到广播时，更新本地主题但不再次广播
+      const currentTheme = useThemeStore.getState().theme
+      if (currentTheme !== newTheme) {
+        useThemeStore.setState({ theme: newTheme })
+        applyTheme(newTheme)
+      }
+      isReceivingExternalChange = false
+    })
+  }
+}
+
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
@@ -102,6 +132,7 @@ export const useThemeStore = create<ThemeState>()(
       setTheme: (theme: ThemeType) => {
         set({ theme })
         applyTheme(theme)
+        broadcastThemeChange(theme)
       },
 
       toggleTheme: () => {
@@ -109,6 +140,7 @@ export const useThemeStore = create<ThemeState>()(
         const newTheme = currentTheme === 'light' ? 'dark' : 'light'
         set({ theme: newTheme })
         applyTheme(newTheme)
+        broadcastThemeChange(newTheme)
       }
     }),
     {
@@ -117,13 +149,16 @@ export const useThemeStore = create<ThemeState>()(
         if (state) {
           applyTheme(state.theme)
         }
+        // 设置监听器
+        setupThemeBroadcastListener()
       }
     }
   )
 )
 
-// 初始化主题
+// 初始化主题和监听器
 if (typeof window !== 'undefined') {
   const theme = useThemeStore.getState().theme
   applyTheme(theme)
+  setupThemeBroadcastListener()
 }
