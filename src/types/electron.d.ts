@@ -49,6 +49,10 @@ interface ElectronAPI {
   // 主题同步
   broadcastThemeChange: (theme: ThemeType) => void
 
+  // 登录状态同步
+  broadcastLoginSuccess: (userData: any) => void
+  onLoginSuccess: (callback: (userData: any) => void) => void
+
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void
   off: (channel: string, callback: (...args: any[]) => void) => void

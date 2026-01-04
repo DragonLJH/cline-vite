@@ -91,6 +91,9 @@ function App() {
   const [routes, setRoutes] = React.useState<RouteConfig[]>([])
   const [routesLoading, setRoutesLoading] = React.useState(true)
 
+  // 检查是否在新窗口中（通过URL hash参数或window.opener）
+  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
+
   React.useEffect(() => {
     // 异步获取包含元数据的路由配置
     getRoutesWithMeta().then((routesWithMeta) => {
@@ -101,7 +104,32 @@ function App() {
       console.error('❌ 路由配置加载失败:', error)
       setRoutesLoading(false)
     })
-  }, [])
+
+    // 监听登录成功事件（仅在主窗口中）
+    if (!isInNewWindow && window.electronAPI?.onLoginSuccess) {
+      const handleLoginSuccess = (userData: any) => {
+        console.log('📥 收到登录成功事件:', userData)
+
+        // 导入用户store并更新状态
+        import('./stores/userStore').then(({ useUserStore }) => {
+          const userStore = useUserStore.getState()
+          userStore.login(userData)
+          console.log('✅ 主窗口用户状态已更新:', userData.name)
+        }).catch((error) => {
+          console.error('❌ 更新用户状态失败:', error)
+        })
+      }
+
+      window.electronAPI.onLoginSuccess(handleLoginSuccess)
+
+      return () => {
+        // 清理事件监听
+        if (window.electronAPI?.off) {
+          window.electronAPI.off('login:success', handleLoginSuccess)
+        }
+      }
+    }
+  }, [isInNewWindow])
 
   if (routesLoading) {
     return (
@@ -113,9 +141,6 @@ function App() {
       </div>
     )
   }
-
-  // 检查是否在新窗口中（通过URL hash参数或window.opener）
-  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
 
   return (
     <Router>

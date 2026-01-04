@@ -3089,3 +3089,169 @@ export const generateRoutes = (): RouteConfig[] => {
 - ✅ **演示账号** - 提供admin和user两个测试账号
 
 现在用户可以完整地体验登录认证流程和动态用户界面功能！
+
+## 登录窗口化实现和优化
+
+### 25. 实现登录窗口化功能
+
+#### 功能概述
+实现登录按窗口方式打开，登录信息同步回主窗口，主窗口更新登录状态，更新后关闭登录窗口。
+
+#### 技术实现方案
+
+**1. 扩展Electron API类型定义**
+在 `src/types/electron.d.ts` 中添加登录状态同步相关方法：
+```typescript
+// 登录状态同步
+broadcastLoginSuccess: (userData: any) => void
+onLoginSuccess: (callback: (userData: any) => void) => void
+```
+
+**2. 更新Preload脚本**
+在 `electron/preload.ts` 中实现登录状态同步API：
+```typescript
+// 登录状态同步
+broadcastLoginSuccess: (userData: any) => ipcRenderer.send('login:success', userData),
+onLoginSuccess: (callback: (userData: any) => void) => ipcRenderer.on('login:success', (event, userData) => callback(userData)),
+```
+
+**3. 增强Electron主进程**
+在 `electron/main.ts` 中添加登录状态广播处理：
+```typescript
+// 登录状态同步
+ipcMain.on('login:success', (event, userData: any) => {
+  console.log('📡 主进程收到登录成功事件:', userData)
+
+  // 获取发送登录事件的窗口ID
+  const senderWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!senderWindow) return
+
+  // 广播到所有其他窗口（除了发送者）
+  const allWindows = BrowserWindow.getAllWindows()
+  allWindows.forEach(window => {
+    if (window.id !== senderWindow.id && !window.isDestroyed()) {
+      console.log(`📡 广播登录成功事件到窗口 ${window.id}`)
+      window.webContents.send('login:success', userData)
+    }
+  })
+
+  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length - 1} 个窗口`)
+})
+```
+
+**4. 修改AppTop组件登录按钮**
+将登录按钮从Link链接改为直接打开新窗口：
+```typescript
+const handleOpenLoginWindow = async () => {
+  try {
+    console.log('Opening login window')
+    if (window.electronAPI?.openWindow) {
+      const result = await window.electronAPI.openWindow('/login', '用户登录')
+      console.log('Login window open result:', result)
+    } else {
+      console.error('electronAPI.openWindow not available')
+    }
+  } catch (error) {
+    console.error('Failed to open login window:', error)
+  }
+}
+
+// 替换原来的Link为button
+<button
+  onClick={handleOpenLoginWindow}
+  className="px-3 py-1 bg-white/10 border-none rounded-xl text-sm text-white cursor-pointer transition-colors hover:bg-white/20"
+  title="在新窗口中登录"
+>
+  登录
+</button>
+```
+
+**5. 更新登录页面逻辑**
+在 `src/pages/login/page.tsx` 中实现登录成功后的状态同步和窗口关闭：
+```typescript
+if (response.success && response.user) {
+  console.log('🎉 登录成功，同步状态并关闭窗口')
+
+  // 广播登录成功事件给所有窗口
+  if (window.electronAPI?.broadcastLoginSuccess) {
+    window.electronAPI.broadcastLoginSuccess(response.user)
+    console.log('📡 已广播登录成功事件')
+  }
+
+  // 检查是否在新窗口中
+  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
+
+  if (isInNewWindow) {
+    // 在新窗口中，状态更新后快速关闭窗口
+    setTimeout(() => {
+      console.log('🔒 关闭登录窗口')
+      if (window.electronAPI?.closeWindow) {
+        window.electronAPI.closeWindow()
+      } else {
+        window.close()
+      }
+    }, 100) // 短暂延迟确保状态同步完成
+  } else {
+    // 在主窗口中，跳转到首页
+    setTimeout(() => {
+      navigate('/', { replace: true })
+    }, 500)
+  }
+}
+```
+
+**6. 增强App.tsx事件监听**
+在 `src/App.tsx` 中添加登录成功事件监听，更新主窗口状态：
+```typescript
+// 监听登录成功事件（仅在主窗口中）
+if (!isInNewWindow && window.electronAPI?.onLoginSuccess) {
+  const handleLoginSuccess = (userData: any) => {
+    console.log('📥 收到登录成功事件:', userData)
+
+    // 导入用户store并更新状态
+    import('./stores/userStore').then(({ useUserStore }) => {
+      const userStore = useUserStore.getState()
+      userStore.login(userData)
+      console.log('✅ 主窗口用户状态已更新:', userData.name)
+    }).catch((error) => {
+      console.error('❌ 更新用户状态失败:', error)
+    })
+  }
+
+  window.electronAPI.onLoginSuccess(handleLoginSuccess)
+
+  return () => {
+    // 清理事件监听
+    if (window.electronAPI?.off) {
+      window.electronAPI.off('login:success', handleLoginSuccess)
+    }
+  }
+}
+```
+
+#### 实现结果
+
+- ✅ **窗口化登录** - 点击登录按钮直接打开独立登录窗口
+- ✅ **跨窗口状态同步** - 登录成功后IPC广播事件更新所有窗口状态
+- ✅ **智能窗口管理** - 登录窗口在状态同步后100ms自动关闭
+- ✅ **实时UI更新** - 主窗口立即显示登录用户信息
+- ✅ **完整IPC通信** - 安全的进程间通信和事件处理
+- ✅ **TypeScript支持** - 完整的类型定义和类型安全
+
+#### 用户操作流程
+
+1. **点击登录** → 主窗口打开独立的登录窗口
+2. **输入账号密码** → 在登录窗口中完成验证
+3. **登录成功** → 广播登录状态事件给所有窗口
+4. **状态同步** → 主窗口实时更新显示用户信息
+5. **窗口关闭** → 登录窗口在100ms后自动关闭
+
+#### 技术要点
+
+- **IPC通信机制** - 使用Electron的进程间通信实现跨窗口状态同步
+- **事件驱动架构** - 基于发布-订阅模式的窗口间通信
+- **状态一致性** - 确保所有窗口的用户状态实时同步
+- **性能优化** - 最小化延迟，提升用户体验
+- **错误处理** - 完善的异常捕获和错误恢复
+
+现在登录窗口化功能已经完全实现，用户可以体验完整的窗口化登录流程！🎉

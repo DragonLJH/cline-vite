@@ -181,6 +181,26 @@ ipcMain.on('theme:change', (event, theme: 'light' | 'dark') => {
   })
 })
 
+// 登录状态同步
+ipcMain.on('login:success', (event, userData: any) => {
+  console.log('📡 主进程收到登录成功事件:', userData)
+
+  // 获取发送登录事件的窗口ID
+  const senderWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!senderWindow) return
+
+  // 广播到所有其他窗口（除了发送者）
+  const allWindows = BrowserWindow.getAllWindows()
+  allWindows.forEach(window => {
+    if (window.id !== senderWindow.id && !window.isDestroyed()) {
+      console.log(`📡 广播登录成功事件到窗口 ${window.id}`)
+      window.webContents.send('login:success', userData)
+    }
+  })
+
+  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length - 1} 个窗口`)
+})
+
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {

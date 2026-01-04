@@ -49,6 +49,10 @@ interface ElectronAPI {
   // 主题同步
   broadcastThemeChange: (theme: 'light' | 'dark') => void
 
+  // 登录状态同步
+  broadcastLoginSuccess: (userData: any) => void
+  onLoginSuccess: (callback: (userData: any) => void) => void
+
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void
   off: (channel: string, callback: (...args: any[]) => void) => void
@@ -91,23 +95,27 @@ const electronAPI: ElectronAPI = {
   // 主题同步
   broadcastThemeChange: (theme: 'light' | 'dark') => ipcRenderer.send('theme:change', theme),
 
+  // 登录状态同步
+  broadcastLoginSuccess: (userData: any) => ipcRenderer.send('login:success', userData),
+  onLoginSuccess: (callback: (userData: any) => void) => ipcRenderer.on('login:success', (event, userData) => callback(userData)),
+
   // 事件监听 (只允许安全的频道)
   on: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.on(channel, callback)
     }
   },
 
   off: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.off(channel, callback)
     }
   },
 
   once: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.once(channel, callback)
     }

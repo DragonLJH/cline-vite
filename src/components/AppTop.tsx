@@ -93,6 +93,20 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
     }
   }
 
+  const handleOpenLoginWindow = async () => {
+    try {
+      console.log('Opening login window')
+      if (window.electronAPI?.openWindow) {
+        const result = await window.electronAPI.openWindow('/login', '用户登录')
+        console.log('Login window open result:', result)
+      } else {
+        console.error('electronAPI.openWindow not available')
+      }
+    } catch (error) {
+      console.error('Failed to open login window:', error)
+    }
+  }
+
   const handleDoubleClick = () => {
     if (platform === 'win32') {
       handleMaximize()
@@ -154,12 +168,13 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
                 </button>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="px-3 py-1 bg-white/10 border-none rounded-xl text-sm text-white no-underline transition-colors hover:bg-white/20"
+              <button
+                onClick={handleOpenLoginWindow}
+                className="px-3 py-1 bg-white/10 border-none rounded-xl text-sm text-white cursor-pointer transition-colors hover:bg-white/20"
+                title="在新窗口中登录"
               >
                 登录
-              </Link>
+              </button>
             )}
           </>
         )}
