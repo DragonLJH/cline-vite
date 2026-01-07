@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog, Notification, clipboard } from 'electron'
 import * as path from 'path'
-
+let mainWindow
 function createWindow() {
   // 获取 preload 脚本路径
   const preloadPath = path.join(app.getAppPath(), 'dist', 'electron', 'preload.js')
@@ -30,7 +30,7 @@ function createWindow() {
     })
   }
 
-  const mainWindow = new BrowserWindow(windowOptions)
+  mainWindow = new BrowserWindow(windowOptions)
 
   // 开发模式打开开发者工具
   if (process.env.NODE_ENV === 'development') {
@@ -83,6 +83,7 @@ ipcMain.handle('window:open', async (event, routePath: string, title: string) =>
       width: 1000,
       height: 700,
       title: title,
+      parent: mainWindow!,
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -185,20 +186,33 @@ ipcMain.on('theme:change', (event, theme: 'light' | 'dark') => {
 ipcMain.on('login:success', (event, userData: any) => {
   console.log('📡 主进程收到登录成功事件:', userData)
 
-  // 获取发送登录事件的窗口ID
+  // 获取发送事件的窗口ID
   const senderWindow = BrowserWindow.fromWebContents(event.sender)
   if (!senderWindow) return
 
-  // 广播到所有其他窗口（除了发送者）
+  // 广播到所有窗口（包括发送者，因为单窗口应用中登录页面和主页在同一窗口）
   const allWindows = BrowserWindow.getAllWindows()
   allWindows.forEach(window => {
-    if (window.id !== senderWindow.id && !window.isDestroyed()) {
+    if (!window.isDestroyed()) {
       console.log(`📡 广播登录成功事件到窗口 ${window.id}`)
       window.webContents.send('login:success', userData)
     }
   })
 
-  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length - 1} 个窗口`)
+  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length} 个窗口`)
+})
+
+ipcMain.on('login:success:back', (event) => {
+  const senderWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!senderWindow) return
+  const allWindows = BrowserWindow.getAllWindows()
+  allWindows.forEach(window => {
+    if (!window.isDestroyed()) {
+      window.webContents.send('login:success:back')
+    }
+  })
+
+  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length} 个窗口`)
 })
 
 app.whenReady().then(createWindow)

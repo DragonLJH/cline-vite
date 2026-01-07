@@ -50,7 +50,7 @@ interface ElectronAPI {
   broadcastThemeChange: (theme: ThemeType) => void
 
   // 登录状态同步
-  broadcastLoginSuccess: (userData: any) => void
+  broadcastLoginSuccess: (userData: any) => Promise<boolean>
   onLoginSuccess: (callback: (userData: any) => void) => void
 
   // 事件监听

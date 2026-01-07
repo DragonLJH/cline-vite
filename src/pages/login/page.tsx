@@ -42,31 +42,10 @@ const LoginPage: React.FC = () => {
 
         // 广播登录成功事件给所有窗口
         if (window.electronAPI?.broadcastLoginSuccess) {
-          window.electronAPI.broadcastLoginSuccess(response.user)
-          console.log('📡 已广播登录成功事件')
-        }
-
-        // 检查是否在新窗口中
-        const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
-
-        if (isInNewWindow) {
-          // 在新窗口中，显示成功信息，等待主窗口更新后关闭
-          console.log('🔒 登录成功，等待主窗口状态同步...')
-
-          // 状态更新后快速关闭窗口
-          setTimeout(() => {
-            console.log('🔒 关闭登录窗口')
-            if (window.electronAPI?.closeWindow) {
-              window.electronAPI.closeWindow()
-            } else {
-              window.close()
-            }
-          }, 100) // 短暂延迟确保状态同步完成
-        } else {
-          // 在主窗口中，跳转到首页
-          setTimeout(() => {
-            navigate('/', { replace: true })
-          }, 500)
+          const res = await window.electronAPI.broadcastLoginSuccess(response.user)
+          console.log('📡 已广播登录成功事件', res)
+          res &&
+            window.electronAPI.closeWindow()
         }
       }
     } catch (error) {

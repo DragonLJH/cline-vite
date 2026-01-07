@@ -50,7 +50,7 @@ interface ElectronAPI {
   broadcastThemeChange: (theme: 'light' | 'dark') => void
 
   // 登录状态同步
-  broadcastLoginSuccess: (userData: any) => void
+  broadcastLoginSuccess: (userData: any) => Promise<boolean>
   onLoginSuccess: (callback: (userData: any) => void) => void
 
   // 事件监听
@@ -96,26 +96,38 @@ const electronAPI: ElectronAPI = {
   broadcastThemeChange: (theme: 'light' | 'dark') => ipcRenderer.send('theme:change', theme),
 
   // 登录状态同步
-  broadcastLoginSuccess: (userData: any) => ipcRenderer.send('login:success', userData),
-  onLoginSuccess: (callback: (userData: any) => void) => ipcRenderer.on('login:success', (event, userData) => callback(userData)),
+  broadcastLoginSuccess: (userData: any) => {
+    return new Promise((resolve) => {
+      ipcRenderer.send('login:success', userData)
+      ipcRenderer.once('login:success:back', (event) => {
+        console.log('[=====broadcastLoginSuccess=====]')
+        resolve(true)
+      })
+    })
+  },
+  onLoginSuccess: (callback: (userData: any) => void) => ipcRenderer.on('login:success', (event, userData) => {
+    console.log('[onLoginSuccess]', event)
+    event.sender.send('login:success:back')
+    callback(userData)
+  }),
 
   // 事件监听 (只允许安全的频道)
   on: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success', 'login:success:back']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.on(channel, callback)
     }
   },
 
   off: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success', 'login:success:back']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.off(channel, callback)
     }
   },
 
   once: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success']
+    const allowedChannels = ['window:maximized', 'window:unmaximized', 'theme:changed', 'login:success', 'login:success:back']
     if (allowedChannels.includes(channel)) {
       ipcRenderer.once(channel, callback)
     }
