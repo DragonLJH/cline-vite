@@ -1,5 +1,5 @@
-import React, { Suspense, useState, useEffect } from 'react'
-import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
+import React, { Suspense, useState, useEffect, useMemo } from 'react'
+import { HashRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom'
 import AppTop from './components/AppTop'
 import { generateRoutes, getRoutesWithMeta, RouteConfig, getNavigationItems } from './router'
 // 导入主题系统，确保在应用启动时初始化
@@ -26,8 +26,8 @@ const RouteWrapper: React.FC<{ route: RouteConfig }> = ({ route }) => {
 // 导航侧边栏组件
 const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
   const location = useLocation()
+  const initial = useMemo(() => location.pathname !== '/', [])
   const [navItems, setNavItems] = useState<any[]>([])
-
   useEffect(() => {
     const items = getNavigationItems(routes)
     setNavItems(items)
@@ -46,7 +46,7 @@ const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
       console.error('Failed to open window:', error)
     }
   }
-
+  if (initial) return <></>
   return (
     <aside className="w-70 flex flex-col py-4 bg-[var(--bg-secondary)] border-r border-[var(--border-primary)]">
       {/* 侧边栏头部 */}
@@ -62,11 +62,10 @@ const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
           <div key={item.path} className="mb-2 flex items-center gap-2">
             <Link
               to={item.path}
-              className={`flex-1 p-3 block no-underline rounded-lg font-medium text-sm transition-all duration-300 ${
-                location.pathname === item.path
-                  ? 'bg-[var(--gradient-primary)] text-[var(--text-inverse)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5'
-                  : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-primary)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5'
-              }`}
+              className={`flex-1 p-3 block no-underline rounded-lg font-medium text-sm transition-all duration-300 ${location.pathname === item.path
+                ? 'bg-[var(--gradient-primary)] text-[var(--text-inverse)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5'
+                : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-primary)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5'
+                }`}
             >
               {item.label}
             </Link>
@@ -88,13 +87,10 @@ const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
 
 // 应用根组件
 function App() {
-  const [routes, setRoutes] = React.useState<RouteConfig[]>([])
-  const [routesLoading, setRoutesLoading] = React.useState(true)
+  const [routes, setRoutes] = useState<RouteConfig[]>([])
+  const [routesLoading, setRoutesLoading] = useState(true)
 
-  // 检查是否在新窗口中（通过URL hash参数或window.opener）
-  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
-
-  React.useEffect(() => {
+  useEffect(() => {
     // 异步获取包含元数据的路由配置
     getRoutesWithMeta().then((routesWithMeta) => {
       setRoutes(routesWithMeta)
@@ -106,7 +102,7 @@ function App() {
     })
 
     // 监听登录成功事件（仅在主窗口中）
-    if (!isInNewWindow && window.electronAPI?.onLoginSuccess) {
+    if (window.electronAPI?.onLoginSuccess) {
       const handleLoginSuccess = (userData: any) => {
         console.log('📥 收到登录成功事件:', userData)
 
@@ -129,7 +125,7 @@ function App() {
         }
       }
     }
-  }, [isInNewWindow])
+  }, [])
 
   if (routesLoading) {
     return (
@@ -151,7 +147,7 @@ function App() {
         {/* 主体内容区域 */}
         <div className="flex-1 flex overflow-hidden">
           {/* 左侧导航侧边栏（仅在主窗口中显示） */}
-          {!isInNewWindow && <Sidebar routes={routes} />}
+          <Sidebar routes={routes} />
 
           {/* 主要内容 */}
           <main className="main-content flex-1 overflow-y-auto overflow-x-hidden bg-[var(--bg-primary)]">

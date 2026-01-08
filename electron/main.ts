@@ -1,5 +1,98 @@
 import { app, BrowserWindow, ipcMain, dialog, Notification, clipboard } from 'electron'
 import * as path from 'path'
+
+/**
+ * 广播事件到窗口
+ * @param eventName 事件名
+ * @param data 传递的数据
+ * @param includeSender 是否包含发送者窗口
+ * @param event IPC 事件对象（用于自动获取和验证发送者窗口）
+ */
+function broadcastToWindows(eventName: string, data?: any, includeSender: boolean = false, event?: Electron.IpcMainEvent) {
+  const allWindows = BrowserWindow.getAllWindows()
+  let senderWindow: BrowserWindow | null = null
+
+  // 如果提供了 event，获取并验证发送者窗口
+  if (event) {
+    senderWindow = BrowserWindow.fromWebContents(event.sender)
+    if (!senderWindow) return // 发送者窗口无效，直接返回
+  }
+
+  allWindows.forEach(window => {
+    if (!window.isDestroyed()) {
+      if (!includeSender && senderWindow && window.id === senderWindow.id) {
+        return // 跳过发送者
+      }
+      window.webContents.send(eventName, data)
+    }
+  })
+}
+
+/**
+ * 广播配置接口
+ */
+interface BroadcastConfig {
+  targetEvent: string        // 广播目标事件名
+  includeSender: boolean     // 是否包含发送者窗口
+  transformData?: (data: any) => any  // 数据转换函数（可选）
+  logMessage?: (data: any) => string // 日志消息生成函数（可选）
+}
+
+/**
+ * 广播通道配置映射表
+ */
+const BROADCAST_CHANNELS: Record<string, BroadcastConfig> = {
+  'theme:change': {
+    targetEvent: 'theme:changed',
+    includeSender: false
+  },
+  'login:success': {
+    targetEvent: 'login:success',
+    includeSender: true,
+    logMessage: (data) => `📡 主进程收到登录成功事件: ${JSON.stringify(data)}`
+  },
+  'login:success:back': {
+    targetEvent: 'login:success:back',
+    includeSender: true
+  }
+}
+
+/**
+ * 统一的广播事件处理器
+ */
+function handleBroadcast(event: Electron.IpcMainEvent, channel: string, ...args: any[]) {
+  const config = BROADCAST_CHANNELS[channel]
+  if (!config) {
+    console.warn(`⚠️ 未配置的广播通道: ${channel}`)
+    return
+  }
+
+  // 获取要广播的数据
+  const data = config.transformData ? config.transformData(args[0]) : args[0]
+
+  // 记录日志
+  if (config.logMessage && args[0]) {
+    console.log(config.logMessage(args[0]))
+  }
+
+  // 执行广播
+  broadcastToWindows(config.targetEvent, data, config.includeSender, event)
+
+  // 特殊处理：登录成功后记录广播完成信息
+  if (channel === 'login:success') {
+    console.log(`✅ 登录状态同步完成，已广播到 ${BrowserWindow.getAllWindows().length} 个窗口`)
+  }
+}
+
+/**
+ * 注册所有广播事件处理器
+ */
+function registerBroadcastHandlers() {
+  Object.keys(BROADCAST_CHANNELS).forEach(channel => {
+    ipcMain.on(channel, (event, ...args) => handleBroadcast(event, channel, ...args))
+  })
+}
+
 let mainWindow
 function createWindow() {
   // 获取 preload 脚本路径
@@ -167,53 +260,8 @@ ipcMain.handle('clipboard:writeText', (event, text) => {
   clipboard.writeText(text)
 })
 
-// 主题同步
-ipcMain.on('theme:change', (event, theme: 'light' | 'dark') => {
-  // 获取发送主题更改的窗口ID
-  const senderWindow = BrowserWindow.fromWebContents(event.sender)
-  if (!senderWindow) return
-
-  // 广播到所有其他窗口
-  const allWindows = BrowserWindow.getAllWindows()
-  allWindows.forEach(window => {
-    if (window.id !== senderWindow.id && !window.isDestroyed()) {
-      window.webContents.send('theme:changed', theme)
-    }
-  })
-})
-
-// 登录状态同步
-ipcMain.on('login:success', (event, userData: any) => {
-  console.log('📡 主进程收到登录成功事件:', userData)
-
-  // 获取发送事件的窗口ID
-  const senderWindow = BrowserWindow.fromWebContents(event.sender)
-  if (!senderWindow) return
-
-  // 广播到所有窗口（包括发送者，因为单窗口应用中登录页面和主页在同一窗口）
-  const allWindows = BrowserWindow.getAllWindows()
-  allWindows.forEach(window => {
-    if (!window.isDestroyed()) {
-      console.log(`📡 广播登录成功事件到窗口 ${window.id}`)
-      window.webContents.send('login:success', userData)
-    }
-  })
-
-  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length} 个窗口`)
-})
-
-ipcMain.on('login:success:back', (event) => {
-  const senderWindow = BrowserWindow.fromWebContents(event.sender)
-  if (!senderWindow) return
-  const allWindows = BrowserWindow.getAllWindows()
-  allWindows.forEach(window => {
-    if (!window.isDestroyed()) {
-      window.webContents.send('login:success:back')
-    }
-  })
-
-  console.log(`✅ 登录状态同步完成，已广播到 ${allWindows.length} 个窗口`)
-})
+// 注册所有广播事件处理器
+registerBroadcastHandlers()
 
 app.whenReady().then(createWindow)
 
