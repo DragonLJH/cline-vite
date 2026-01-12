@@ -1,6 +1,8 @@
 import React, { Suspense, useState, useEffect, useMemo } from 'react'
 import { HashRouter as Router, Routes, Route, Link, useLocation, useParams } from 'react-router-dom'
 import AppTop from './components/AppTop'
+import { RouteGuard } from './components/RouteGuard'
+import { PermissionAwareNavigation } from './components/PermissionAwareNavigation'
 import { generateRoutes, getRoutesWithMeta, RouteConfig, getNavigationItems } from './router'
 // 导入主题系统，确保在应用启动时初始化
 import './stores/themeStore'
@@ -17,73 +19,15 @@ const LoadingSpinner = () => (
 const RouteWrapper: React.FC<{ route: RouteConfig }> = ({ route }) => {
   const Component = route.component
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Component />
-    </Suspense>
+    <RouteGuard route={route}>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Component />
+      </Suspense>
+    </RouteGuard>
   )
 }
 
-// 导航侧边栏组件
-const Sidebar: React.FC<{ routes: RouteConfig[] }> = ({ routes }) => {
-  const location = useLocation()
-  const initial = useMemo(() => location.pathname !== '/', [])
-  const [navItems, setNavItems] = useState<any[]>([])
-  useEffect(() => {
-    const items = getNavigationItems(routes)
-    setNavItems(items)
-  }, [routes])
 
-  const handleOpenInWindow = async (path: string, title: string) => {
-    try {
-      console.log('Opening window:', { path, title })
-      if (window.electronAPI?.openWindow) {
-        const result = await window.electronAPI.openWindow(path, title)
-        console.log('Window open result:', result)
-      } else {
-        console.error('electronAPI.openWindow not available')
-      }
-    } catch (error) {
-      console.error('Failed to open window:', error)
-    }
-  }
-  if (initial) return <></>
-  return (
-    <aside className="w-70 flex flex-col py-4 bg-[var(--bg-secondary)] border-r border-[var(--border-primary)]">
-      {/* 侧边栏头部 */}
-      <div className="px-4 py-4 mb-4 border-b border-[var(--border-primary)]">
-        <h2 className="m-0 text-xl font-semibold text-center text-[var(--text-primary)]">
-          🧭 页面导航
-        </h2>
-      </div>
-
-      {/* 导航菜单 */}
-      <nav className="flex-1 px-4">
-        {navItems.map((item) => (
-          <div key={item.path} className="mb-2 flex items-center gap-2">
-            <Link
-              to={item.path}
-              className={`flex-1 p-3 block no-underline rounded-lg font-medium text-sm transition-all duration-300 ${location.pathname === item.path
-                ? 'bg-[var(--gradient-primary)] text-[var(--text-inverse)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5'
-                : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-primary)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:-translate-y-0.5'
-                }`}
-            >
-              {item.label}
-            </Link>
-            {item.canOpenWindow && (
-              <button
-                onClick={() => handleOpenInWindow(item.path, item.label.replace(/^[^\s]+\s/, ''))}
-                className="p-2 rounded-md cursor-pointer text-xs opacity-70 transition-all duration-200 w-8 h-8 flex items-center justify-center bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:opacity-100 hover:bg-[var(--gradient-primary)] hover:text-[var(--text-inverse)]"
-                title="在新窗口中打开"
-              >
-                🪟
-              </button>
-            )}
-          </div>
-        ))}
-      </nav>
-    </aside>
-  )
-}
 
 // 应用根组件
 function App() {
@@ -145,9 +89,9 @@ function App() {
         <AppTop routes={routes} />
 
         {/* 主体内容区域 */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* 左侧导航侧边栏（仅在主窗口中显示） */}
-          <Sidebar routes={routes} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* 顶部权限感知导航栏 */}
+          <PermissionAwareNavigation routes={routes} />
 
           {/* 主要内容 */}
           <main className="main-content flex-1 overflow-y-auto overflow-x-hidden bg-[var(--bg-primary)]">

@@ -12,6 +12,7 @@ export interface PageMeta {
   permissions?: string[] // 访问页面所需的权限列表
   showInMenu?: boolean // 是否在导航菜单中显示，默认true
   canOpenWindow?: boolean // 是否支持单独打开窗口，默认false
+  requiresAuth?: boolean // 是否需要登录才能访问，默认false
 }
 
 // 页面模块接口

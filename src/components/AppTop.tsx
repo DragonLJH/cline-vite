@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { RouteConfig, getNavigationItems } from '../router'
 import { useUserStore } from '../stores/userStore'
+import { useWindowType } from '../hooks/useWindowType'
 
 interface AppTopProps {
   routes?: RouteConfig[]
@@ -11,11 +12,9 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const userStore = useUserStore()
+  const { isMainWindow } = useWindowType()
   const [isMaximized, setIsMaximized] = useState(false)
   const [platform, setPlatform] = useState<string>('')
-
-  // 检查是否在新窗口中（通过URL hash参数或window.opener）
-  const isInNewWindow = window.location.hash.includes('newwindow=true') || !!window.opener
 
   // 使用getNavigationItems生成导航项，包含新窗口打开信息
   const navItems = getNavigationItems(routes)
@@ -152,7 +151,7 @@ const AppTop: React.FC<AppTopProps> = ({ routes = [] }) => {
       {/* 右侧：用户信息、状态指示器和窗口控制 */}
       <div className="flex items-center gap-4">
         {/* 用户信息（登录后显示，仅在主窗口中） */}
-        {!isInNewWindow && (
+        {isMainWindow && (
           <>
             {userStore.isLoggedIn ? (
               <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-xl">

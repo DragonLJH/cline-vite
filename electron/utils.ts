@@ -18,7 +18,7 @@ export function broadcastToWindows(eventName: string, data?: any, includeSender:
     if (!senderWindow) return // 发送者窗口无效，直接返回
   }
 
-  console.log('[broadcastToWindows]', data)
+  console.log('[broadcastToWindows]', eventName, data)
   allWindows.forEach(window => {
     if (!window.isDestroyed()) {
       if (!includeSender && senderWindow && window.id === senderWindow.id) {

@@ -1,13 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { login as apiLogin, logout as apiLogout, LoginRequest, LoginResponse } from '../services/auth'
+import { PermissionService } from '../services/permissionService'
+import type { User as UserType } from '../types/auth'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-}
+interface User extends UserType {}
 
 interface UserState {
   currentUser: User | null

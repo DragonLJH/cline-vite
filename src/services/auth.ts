@@ -13,6 +13,8 @@ export interface LoginResponse {
     name: string
     email: string
     avatar?: string
+    roles: string[]
+    permissions: string[]
   }
   message?: string
   token?: string
@@ -38,7 +40,8 @@ const mockUsers = [
     password: 'admin123',
     name: '管理员',
     email: 'admin@example.com',
-    avatar: '👤'
+    avatar: '👤',
+    roles: ['admin'] // 管理员角色
   },
   {
     id: '2',
@@ -46,7 +49,8 @@ const mockUsers = [
     password: 'user123',
     name: '普通用户',
     email: 'user@example.com',
-    avatar: '👨‍💻'
+    avatar: '👨‍💻',
+    roles: ['user'] // 普通用户角色
   }
 ]
 
@@ -65,12 +69,19 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   if (user) {
     console.log('✅ 登录成功:', user.name)
 
-    // 移除密码信息
+    // 动态导入权限服务计算用户权限
+    const { PermissionService } = await import('./permissionService')
+
+    // 移除密码信息并计算权限
     const { password, ...userWithoutPassword } = user
+    const permissions = PermissionService.calculateUserPermissions(user as any)
 
     return {
       success: true,
-      user: userWithoutPassword,
+      user: {
+        ...userWithoutPassword,
+        permissions
+      },
       token: `mock-token-${user.id}-${Date.now()}`,
       message: `欢迎回来，${user.name}！`
     }

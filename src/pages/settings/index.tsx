@@ -7,7 +7,8 @@ export const pageMeta = {
   description: '应用设置和个性化配置',
   path: '/settings',
   icon: '⚙️',
-  permissions: ['admin'], // 需要管理员权限
+  permissions: ['page:settings'], // 使用权限常量
   showInMenu: true, // 在菜单中显示
-  canOpenWindow: true // 支持单独窗口
+  canOpenWindow: true, // 支持单独窗口
+  requiresAuth: true // 需要登录
 }

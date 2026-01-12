@@ -1,5 +1,14 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
+// 允许的事件通道列表
+const ALLOWED_CHANNELS: readonly string[] = [
+  'window:maximized',
+  'window:unmaximized',
+  'theme:changed',
+  'login:success',
+  'login:success:back'
+]
+
 // 自定义 API 接口定义
 interface ElectronAPI {
   // 系统信息
@@ -107,47 +116,25 @@ const electronAPI: ElectronAPI = {
   },
   onLoginSuccess: (callback: (userData: any) => void) => ipcRenderer.on('login:success', (event, userData) => {
     console.log('[onLoginSuccess]', event)
-    event.sender.send('login:success:back')
+    ipcRenderer.send('login:success:back')
     callback(userData)
   }),
 
   // 事件监听 (只允许安全的频道)
   on: (channel: string, callback: (...args: any[]) => void) => {
-    // 允许的通道列表 - 包含广播通道和窗口事件
-    const allowedChannels = [
-      'window:maximized',
-      'window:unmaximized',
-      'theme:changed',
-      'login:success',
-      'login:success:back'
-    ]
-    if (allowedChannels.includes(channel)) {
+    if (ALLOWED_CHANNELS.includes(channel)) {
       ipcRenderer.on(channel, callback)
     }
   },
 
   off: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = [
-      'window:maximized',
-      'window:unmaximized',
-      'theme:changed',
-      'login:success',
-      'login:success:back'
-    ]
-    if (allowedChannels.includes(channel)) {
+    if (ALLOWED_CHANNELS.includes(channel)) {
       ipcRenderer.off(channel, callback)
     }
   },
 
   once: (channel: string, callback: (...args: any[]) => void) => {
-    const allowedChannels = [
-      'window:maximized',
-      'window:unmaximized',
-      'theme:changed',
-      'login:success',
-      'login:success:back'
-    ]
-    if (allowedChannels.includes(channel)) {
+    if (ALLOWED_CHANNELS.includes(channel)) {
       ipcRenderer.once(channel, callback)
     }
   }
