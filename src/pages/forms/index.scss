@@ -1,0 +1,79 @@
+// Forms 页面专用样式
+
+.forms-page {
+  // 页面特定的样式可以在这里添加
+}
+
+// 表单卡片悬停效果
+.form-card {
+  @apply transition-transform duration-200 ease-in-out;
+
+  &:hover {
+    @apply transform -translate-y-1;
+  }
+}
+
+// 标签页动画
+.tab-button {
+  @apply relative overflow-hidden;
+
+  &::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 transition-opacity duration-300;
+  }
+
+  &.active::before {
+    @apply opacity-100;
+  }
+}
+
+// 搜索框样式增强
+.search-container {
+  @apply relative;
+
+  .search-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4;
+  }
+
+  .search-input {
+    @apply pl-10;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .forms-page {
+    .form-grid {
+      @apply grid-cols-1 gap-4;
+    }
+
+    .feature-grid {
+      @apply grid-cols-2 gap-3;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .forms-page {
+    .feature-grid {
+      @apply grid-cols-1;
+    }
+
+    .tab-container {
+      @apply flex-col space-y-2;
+    }
+  }
+}
+
+// 深色主题支持
+[data-theme="dark"] {
+  .forms-page {
+    .form-card {
+      @apply bg-gray-800 border-gray-700;
+
+      &:hover {
+        @apply bg-gray-750;
+      }
+    }
+  }
+}
