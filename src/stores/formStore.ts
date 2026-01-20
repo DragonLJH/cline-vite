@@ -94,7 +94,7 @@ export const useFormStore = create<FormState>()(
           }
         }))
 
-        console.log(`📝 表单提交已存储: ${formName}`, submission)
+        window.electronAPI?.log.info(`📝 表单提交已存储: ${formName}`, submission)
       },
 
       getFormSubmissions: (formName: string) => {
@@ -111,12 +111,12 @@ export const useFormStore = create<FormState>()(
           delete newSubmissions[formName]
           return { submissions: newSubmissions }
         })
-        console.log(`🗑️ 已清除表单历史: ${formName}`)
+        window.electronAPI?.log.info(`🗑️ 已清除表单历史: ${formName}`)
       },
 
       clearAllSubmissions: () => {
         set({ submissions: {} })
-        console.log('🗑️ 已清除所有表单历史')
+        window.electronAPI?.log.info('🗑️ 已清除所有表单历史')
       },
 
       removeSubmission: (formName: string, submissionId: string) => {
@@ -131,7 +131,7 @@ export const useFormStore = create<FormState>()(
             }
           }
         })
-        console.log(`🗑️ 已删除提交记录: ${formName} - ${submissionId}`)
+        window.electronAPI?.log.info(`🗑️ 已删除提交记录: ${formName} - ${submissionId}`)
       },
 
       getRecentSubmissions: (limit: number = 10) => {
@@ -163,7 +163,7 @@ export const useFormStore = create<FormState>()(
           }
         }))
 
-        console.log(`🔄 初始化表单工作流: ${formId}`, workflowState)
+        window.electronAPI?.log.info(`🔄 初始化表单工作流: ${formId}`, workflowState)
       },
 
       updateWorkflowStep: (formId: string, currentStep: number) => {
@@ -185,7 +185,7 @@ export const useFormStore = create<FormState>()(
           }
         })
 
-        console.log(`📍 更新工作流步骤: ${formId} -> ${currentStep}`)
+        window.electronAPI?.log.info(`📍 更新工作流步骤: ${formId} -> ${currentStep}`)
       },
 
       submitForApproval: (formId: string, data: Record<string, any>) => {
@@ -209,7 +209,7 @@ export const useFormStore = create<FormState>()(
 
         // 添加提交记录
         get().addSubmission(formId, data, 'success')
-        console.log(`📤 表单提交审批: ${formId}`)
+        window.electronAPI?.log.info(`📤 表单提交审批: ${formId}`)
       },
 
       addApprovalRecord: (formId: string, record: Omit<ApprovalRecord, 'id' | 'timestamp'>) => {
@@ -236,7 +236,7 @@ export const useFormStore = create<FormState>()(
           }
         })
 
-        console.log(`✅ 添加审批记录: ${formId}`, approvalRecord)
+        window.electronAPI?.log.info(`✅ 添加审批记录: ${formId}`, approvalRecord)
       },
 
       updateApprovalStatus: (formId: string, status: 'approved' | 'rejected') => {
@@ -259,7 +259,7 @@ export const useFormStore = create<FormState>()(
           }
         })
 
-        console.log(`📊 更新审批状态: ${formId} -> ${status}`)
+        window.electronAPI?.log.info(`📊 更新审批状态: ${formId} -> ${status}`)
       },
 
       completeWorkflow: (formId: string) => {
@@ -281,7 +281,7 @@ export const useFormStore = create<FormState>()(
           }
         })
 
-        console.log(`🏁 完成工作流: ${formId}`)
+        window.electronAPI?.log.info(`🏁 完成工作流: ${formId}`)
       },
 
       getWorkflowState: (formId: string) => {
@@ -298,7 +298,7 @@ export const useFormStore = create<FormState>()(
           delete newWorkflows[formId]
           return { workflows: newWorkflows }
         })
-        console.log(`🗑️ 已清除工作流状态: ${formId}`)
+        window.electronAPI?.log.info(`🗑️ 已清除工作流状态: ${formId}`)
       }
     }),
     {

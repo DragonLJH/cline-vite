@@ -1,4 +1,5 @@
 import { ipcMain, BrowserWindow, dialog, Notification, clipboard } from 'electron'
+import log from 'electron-log'
 import { BROADCAST_CHANNELS, handleBroadcast, registerBroadcastHandlers } from './broadcastManager'
 import { createBrowserWindow } from './windowManager'
 
@@ -150,6 +151,35 @@ export class IPCHandlerManager {
     this.addChannel('clipboard:writeText', {
       handler: (event: Electron.IpcMainInvokeEvent, text: string) => {
         clipboard.writeText(text)
+      },
+      type: 'handle'
+    })
+
+    // 日志
+    this.addChannel('log:info', {
+      handler: (event: Electron.IpcMainInvokeEvent, message: string, ...args: any[]) => {
+        log.info(message, ...args)
+      },
+      type: 'handle'
+    })
+
+    this.addChannel('log:error', {
+      handler: (event: Electron.IpcMainInvokeEvent, message: string, ...args: any[]) => {
+        log.error(message, ...args)
+      },
+      type: 'handle'
+    })
+
+    this.addChannel('log:warn', {
+      handler: (event: Electron.IpcMainInvokeEvent, message: string, ...args: any[]) => {
+        log.warn(message, ...args)
+      },
+      type: 'handle'
+    })
+
+    this.addChannel('log:debug', {
+      handler: (event: Electron.IpcMainInvokeEvent, message: string, ...args: any[]) => {
+        log.debug(message, ...args)
       },
       type: 'handle'
     })

@@ -56,7 +56,7 @@ const mockUsers = [
 
 // 模拟登录API
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-  console.log('🔐 发起登录请求:', credentials.username)
+  window.electronAPI?.log.info('Initiating login request') // 发起登录请求
 
   // 模拟网络延迟
   await simulateDelay()
@@ -67,7 +67,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   )
 
   if (user) {
-    console.log('✅ 登录成功:', user.name)
+    window.electronAPI?.log.info('Login successful') // 登录成功
 
     // 动态导入权限服务计算用户权限
     const { PermissionService } = await import('./permissionService')
@@ -85,8 +85,9 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
       token: `mock-token-${user.id}-${Date.now()}`,
       message: `欢迎回来，${user.name}！`
     }
+// 模拟登录API
   } else {
-    console.log('❌ 登录失败: 用户名或密码错误')
+    window.electronAPI?.log.warn('Login failed: Invalid username or password') // 登录失败: 用户名或密码错误
 
     return {
       success: false,
@@ -97,11 +98,11 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
 // 模拟登出API（如果需要）
 export const logout = async (): Promise<ApiResponse<null>> => {
-  console.log('🚪 发起登出请求')
+  window.electronAPI?.log.info('Initiating logout request') // 发起登出请求
 
   await simulateDelay(500)
 
-  console.log('✅ 登出成功')
+  window.electronAPI?.log.info('Logout successful') // 登出成功
 
   return {
     success: true,
@@ -111,7 +112,7 @@ export const logout = async (): Promise<ApiResponse<null>> => {
 
 // 模拟检查登录状态API
 export const checkAuth = async (token?: string): Promise<ApiResponse<{ isValid: boolean }>> => {
-  console.log('🔍 检查认证状态')
+  window.electronAPI?.log.info('Checking authentication status') // 检查认证状态
 
   await simulateDelay(300)
 
@@ -126,7 +127,7 @@ export const checkAuth = async (token?: string): Promise<ApiResponse<{ isValid: 
 
 // 统一的错误处理函数
 export const handleApiError = (error: any): string => {
-  console.error('API请求错误:', error)
+  window.electronAPI?.log.error('API request error', error) // API请求错误
 
   if (error.message) {
     return error.message

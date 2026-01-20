@@ -62,6 +62,14 @@ interface ElectronAPI {
   broadcastLoginSuccess: (userData: any) => Promise<boolean>
   onLoginSuccess: (callback: (userData: any) => void) => void
 
+  // 日志
+  log: {
+    info: (message: string, ...args: any[]) => Promise<void>
+    error: (message: string, ...args: any[]) => Promise<void>
+    warn: (message: string, ...args: any[]) => Promise<void>
+    debug: (message: string, ...args: any[]) => Promise<void>
+  }
+
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void
   off: (channel: string, callback: (...args: any[]) => void) => void
@@ -119,6 +127,14 @@ const electronAPI: ElectronAPI = {
     ipcRenderer.send('login:success:back')
     callback(userData)
   }),
+
+  // 日志
+  log: {
+    info: async (message: string, ...args: any[]) => ipcRenderer.invoke('log:info', message, ...args),
+    error: async (message: string, ...args: any[]) => ipcRenderer.invoke('log:error', message, ...args),
+    warn: async (message: string, ...args: any[]) => ipcRenderer.invoke('log:warn', message, ...args),
+    debug: async (message: string, ...args: any[]) => ipcRenderer.invoke('log:debug', message, ...args)
+  },
 
   // 事件监听 (只允许安全的频道)
   on: (channel: string, callback: (...args: any[]) => void) => {

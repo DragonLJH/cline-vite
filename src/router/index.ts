@@ -32,38 +32,38 @@ export interface RouteConfig {
 // 使用 Vite 的 import.meta.glob 自动发现页面
 const pageModules = import.meta.glob('../pages/*/index.tsx') as Record<string, () => Promise<PageModule>>
 
-console.log('🔍 import.meta.glob 模式: ../pages/*/index.tsx')
-console.log('🔍 发现的页面模块数量:', Object.keys(pageModules).length)
-console.log('🔍 发现的页面模块路径:', Object.keys(pageModules))
+window.electronAPI?.log.info('🔍 import.meta.glob 模式: ../pages/*/index.tsx')
+window.electronAPI?.log.info('🔍 发现的页面模块数量:', Object.keys(pageModules).length)
+window.electronAPI?.log.info('🔍 发现的页面模块路径:', Object.keys(pageModules))
 
 // 额外检查login页面
 const loginModule = import.meta.glob('../pages/login/index.tsx')
-console.log('🔍 单独检查login页面:', Object.keys(loginModule))
+window.electronAPI?.log.info('🔍 单独检查login页面:', Object.keys(loginModule))
 
 // 生成路由配置（同步版本，返回懒加载组件）
 export const generateRoutes = (): RouteConfig[] => {
   const routes: RouteConfig[] = []
 
-  console.log(`📋 开始生成路由配置，发现 ${Object.keys(pageModules).length} 个页面模块`)
+  window.electronAPI?.log.info(`📋 开始生成路由配置，发现 ${Object.keys(pageModules).length} 个页面模块`)
 
   for (const [path, moduleLoader] of Object.entries(pageModules)) {
-    console.log('🔍 处理页面路径:', path)
+    window.electronAPI?.log.info('🔍 处理页面路径:', path)
     // 从文件路径提取路由路径
     // ../pages/home/index.tsx -> home -> /home
     // ../pages/counter/index.tsx -> counter -> /counter
     const routePath = path.replace('../pages/', '').replace('/index.tsx', '')
     const finalPath = routePath === 'home' ? '/' : `/${routePath}`
 
-    console.log(`📍 生成路由: ${path} -> ${finalPath}`)
+    window.electronAPI?.log.info(`📍 生成路由: ${path} -> ${finalPath}`)
 
     // 创建懒加载组件
     const LazyComponent = React.lazy(async () => {
       try {
         const module = await moduleLoader()
-        console.log(`✅ 懒加载页面: ${finalPath} -> ${module.pageMeta?.title || '未命名页面'}`)
+        window.electronAPI?.log.info(`✅ 懒加载页面: ${finalPath} -> ${module.pageMeta?.title || '未命名页面'}`)
         return { default: module.default }
       } catch (error) {
-        console.error(`❌ 页面加载失败: ${path}`, error)
+        window.electronAPI?.log.error(`❌ 页面加载失败: ${path}`, error)
         // 返回错误组件
         return {
           default: () => React.createElement('div', {
@@ -88,7 +88,7 @@ export const generateRoutes = (): RouteConfig[] => {
     })
   }
 
-  console.log(`🎯 路由生成完成，共 ${routes.length} 个路由:`, routes.map(r => r.path))
+  window.electronAPI?.log.info(`🎯 路由生成完成，共 ${routes.length} 个路由:`, routes.map(r => r.path))
 
   // 按路径长度排序，确保根路径 '/' 排在前面
   const sortedRoutes = routes.sort((a, b) => {
@@ -97,7 +97,7 @@ export const generateRoutes = (): RouteConfig[] => {
     return a.path.length - b.path.length
   })
 
-  console.log('📋 路由排序完成:', sortedRoutes.map(r => r.path))
+  window.electronAPI?.log.info('📋 路由排序完成:', sortedRoutes.map(r => r.path))
   return sortedRoutes
 }
 
@@ -115,7 +115,7 @@ export const getRoutesWithMeta = async (): Promise<RouteConfig[]> => {
           meta: module.pageMeta
         }
       } catch (error) {
-        console.warn(`⚠️ 无法获取页面元数据: ${route.path}`, error)
+        window.electronAPI?.log.warn(`⚠️ 无法获取页面元数据: ${route.path}`, error)
         return route
       }
     })
@@ -130,9 +130,9 @@ export const preloadRoute = async (path: string): Promise<void> => {
   if (route) {
     try {
       await route.loader()
-      console.log(`🚀 预加载完成: ${path}`)
+      window.electronAPI?.log.info(`🚀 预加载完成: ${path}`)
     } catch (error) {
-      console.warn(`⚠️ 预加载失败: ${path}`, error)
+      window.electronAPI?.log.warn(`⚠️ 预加载失败: ${path}`, error)
     }
   }
 }

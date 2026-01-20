@@ -53,6 +53,14 @@ interface ElectronAPI {
   broadcastLoginSuccess: (userData: any) => Promise<boolean>
   onLoginSuccess: (callback: (userData: any) => void) => void
 
+  // 日志
+  log: {
+    info: (message: string, ...args: any[]) => Promise<void>
+    error: (message: string, ...args: any[]) => Promise<void>
+    warn: (message: string, ...args: any[]) => Promise<void>
+    debug: (message: string, ...args: any[]) => Promise<void>
+  }
+
   // 事件监听
   on: (channel: string, callback: (...args: any[]) => void) => void
   off: (channel: string, callback: (...args: any[]) => void) => void
